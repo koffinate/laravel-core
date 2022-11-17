@@ -2,42 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="435d9841-49bc-4ab3-9537-3280fd69bc48" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/$CACHE_FILE$" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/laravel-core.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/laravel-core.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.styleci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.styleci.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/arkid/app.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/yusronarif/core.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/yusronarif/plugins.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/helpers.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CoreServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/CoreServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/Concerns/HasTimestamps.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/Concerns/HasTimestamps.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/Model.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/ModelCustom.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/ModelCustom.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/Scopes/GeneralScope.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/Scopes/GeneralScope.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Eloquent/SoftDeletes.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Eloquent/SoftDeletes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Migrations/Migration.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Migrations/Migration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/MySqlConnection.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/MySqlConnection.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/PgSqlConnection.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/PgSqlConnection.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Query/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Query/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database/Schema/Blueprint.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database/Schema/Blueprint.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Foundation/Auth/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Foundation/Auth/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Middleware/ShareActiveUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Http/Middleware/ShareActiveUser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Providers/BladeServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Providers/BladeServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Providers/DbServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Providers/DbServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Providers/MysqlServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Providers/MysqlServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Providers/PgsqlServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Providers/PgsqlServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Routing/Controller.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Routing/Controller.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Support/Str.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Support/Str.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/TestCase.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/TestCase.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/User.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +127,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1668660442310</updated>
-      <workItem from="1668660443559" duration="5857000" />
+      <workItem from="1668660443559" duration="6043000" />
     </task>
     <servers />
   </component>
