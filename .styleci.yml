@@ -1,3 +1,6 @@
-preset: laravel
-
 version: 8.1
+preset: laravel
+enabled:
+  - phpdoc_align
+disabled:
+  - laravel_phpdoc_alignment
