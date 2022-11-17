@@ -1,10 +1,10 @@
 <?php
 
-namespace Yusronarif\Core\Providers;
+namespace Koffin\Core\Providers;
 
 use Illuminate\Database\Connection;
 use Illuminate\Support\ServiceProvider;
-use Yusronarif\Core\Database\PgSqlConnection;
+use Koffin\Core\Database\PgSqlConnection;
 
 class PgsqlServiceProvider extends ServiceProvider
 {

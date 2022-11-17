@@ -1,8 +1,8 @@
 <?php
 
-namespace Yusronarif\Core\Database\Eloquent\Scopes;
+namespace Koffin\Core\Database\Eloquent\Scopes;
 
-use Yusronarif\Core\Database\Eloquent\Builder;
+use Koffin\Core\Database\Eloquent\Builder;
 
 trait GeneralScope
 {

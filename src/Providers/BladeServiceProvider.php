@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Providers;
+namespace Koffin\Core\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;

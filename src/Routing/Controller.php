@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Routing;
+namespace Koffin\Core\Routing;
 
 use Exception;
 use Illuminate\Http\Request;

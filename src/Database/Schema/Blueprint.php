@@ -1,11 +1,11 @@
 <?php
 
-namespace Yusronarif\Core\Database\Schema;
+namespace Koffin\Core\Database\Schema;
 
 use Closure;
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 use Illuminate\Support\Facades\Schema;
-use Yusronarif\Core\Support\Str;
+use Koffin\Core\Support\Str;
 
 class Blueprint extends BaseBlueprint
 {

@@ -1,35 +1,9 @@
 <?php
 
-if (! defined('SPACER')) {
-    define('SPACER', '&nbsp;&nbsp;&nbsp;&nbsp;');
-}
-if (! defined('SPACER_TIGHT')) {
-    define('SPACER_TIGHT', '&nbsp;&nbsp;');
-}
-if (! defined('SPACER_WIDE')) {
-    define('SPACER_WIDE', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-}
-
-// date format
-if (! defined('DATE_SHORT')) {
-    define('DATE_SHORT', 'L');
-}
-if (! defined('DATE_MEDIUM')) {
-    define('DATE_MEDIUM', 'll');
-}
-if (! defined('DATE_LONG')) {
-    define('DATE_LONG', 'LL');
-}
-if (! defined('DATE_FULL')) {
-    define('DATE_FULL', 'LLL');
-}
-if (! defined('DATE_FULL_SHORT')) {
-    define('DATE_FULL_SHORT', 'lll');
-}
-
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
-use Yusronarif\Core\Support\Str;
+use Illuminate\Support\ViewErrorBag;
+use Koffin\Core\Support\Str;
 
 if (! function_exists('f')) {
     /**
@@ -48,6 +22,7 @@ if (! function_exists('prettySize')) {
      *
      * @param  int  $bytes
      * @param  int  $decimals
+     *
      * @return string
      */
     function prettySize(int $bytes, int $decimals = 2): string
@@ -63,21 +38,32 @@ if (! function_exists('setDefaultRequest')) {
     /**
      * Set Default Value for Request Input.
      *
-     * @param  string|array  $name
-     * @param  null  $value
+     * @param string|array $name
+     * @param null         $value
+     * @param bool         $force
+     *
+     * @return void
      */
-    function setDefaultRequest(string|array $name, mixed $value = null): void
+    function setDefaultRequest(string|array $name, mixed $value = null, bool $force = true): void
     {
-        $request = app('request');
+        try {
+            $request = app('request');
 
-        if (is_array($name)) {
-            $data = $name;
-        } else {
-            $data = [$name => $value];
+            if (is_array($name)) {
+                $data = $name;
+            } else {
+                $data = [$name => $value];
+            }
+
+            if ($force) {
+                $request->merge($data);
+            } else {
+                $request->mergeIfMissing($data);
+            }
+            $request->session()->flashInput($data);
+        } catch (Exception $e) {
+            // throw $e;
         }
-
-        $request->mergeIfMissing($data);
-        $request->session()->flashInput($data);
     }
 }
 
@@ -86,6 +72,7 @@ if (! function_exists('fromResource')) {
      * Generate an collection from resource.
      *
      * @param  \Illuminate\Http\Resources\Json\JsonResource  $resource
+     *
      * @return mixed
      */
     function fromResource(\Illuminate\Http\Resources\Json\JsonResource $resource): mixed
@@ -99,11 +86,12 @@ if (! function_exists('vendor')) {
      * Generate an asset path for the application.
      *
      * @param  string  $path
+     *
      * @return string
      */
     function vendor(string $path): string
     {
-        $vendorPath = config('app.vendor_url') ?? '';
+        $vendorPath = config('koffinate.core.url.vendor');
         $vendorPath = $vendorPath !== '' ? $vendorPath : asset('vendor');
 
         if (preg_match('/(:\/\/)+/i', $path, $matches, PREG_UNMATCHED_AS_NULL, 1)) {
@@ -135,11 +123,12 @@ if (! function_exists('document')) {
      * Generate an asset path for the application.
      *
      * @param  string  $path
+     *
      * @return string
      */
     function document(string $path): string
     {
-        return config('app.document_url', asset('files'))."/{$path}";
+        return config('koffinate.core.url.document', asset('files'))."/{$path}";
     }
 }
 
@@ -148,14 +137,15 @@ if (! function_exists('plugins')) {
      * Retrive Application Plugins.
      * retriving from config's definitions.
      *
-     * @param  string|array  $name
-     * @param  string  $base
-     * @param  array|null  $type
+     * @param string|array|null $name
+     * @param string            $base
+     * @param string|array      $type
+     *
      * @return void
      */
-    function plugins(string|array $name, string $base = 'local', ?array $type = null): void
+    function plugins(string|array|null $name = null, string $base = 'local', string|array $type = ['css', 'js']): void
     {
-        if (empty($name)) {
+        if (!$name) {
             return;
         }
         if (! in_array($base, ['vendor', 'local'])) {
@@ -163,35 +153,30 @@ if (! function_exists('plugins')) {
         }
 
         $name = (array) $name;
-
-        if (empty($type)) {
-            $type = ['css', 'js'];
-        }
         $type = (array) $type;
-        sort($type);
 
         $rs = [];
 
-        foreach ($name as $packKey => $packVal) {
-            if (is_array($packVal)) {
-                $rs = array_merge_recursive($rs, pluginAssets($packKey, $base, $type));
+        foreach ($name as $pkgKey => $pkgVal) {
+            if (is_array($pkgVal)) {
+                $rs = array_merge_recursive($rs, pluginAssets($pkgKey, $base, $type));
 
-                foreach ($packVal as $pkey => $pval) {
-                    $rs = array_merge_recursive($rs, pluginAssets($pval, $base, $type, $packKey.'.'.$pkey.'.'));
+                foreach ($pkgVal as $pkey => $pval) {
+                    $rs = array_merge_recursive($rs, pluginAssets($pval, $base, $type, $pkgKey.'.'.$pkey.'.'));
                 }
             } else {
-                $rs = array_merge_recursive($rs, pluginAssets($packVal, $base, $type));
+                $rs = array_merge_recursive($rs, pluginAssets($pkgVal, $base, $type));
             }
         }
 
         if (is_array($rs['css'])) {
-            $rs['css'] = implode('', $rs['css']);
+            $css = implode('', $rs['css']);
         }
         if (is_array($rs['js'])) {
-            $rs['js'] = implode('', $rs['js']);
+            $js = implode('', $rs['js']);
         }
 
-        View::share(['pluginCss' => $rs['css'], 'pluginJs' => $rs['js']]);
+        View::share(['pluginCss' => $css ?? '', 'pluginJs' => $js ?? '']);
     }
 }
 
@@ -200,18 +185,19 @@ if (! function_exists('pluginAssets')) {
      * Retrive Application Plugins's Assets.
      * retriving from config's definitions.
      *
-     * @param  string  $names
-     * @param  string  $base
-     * @param  array  $type
-     * @param  string  $parent
+     * @param string $names
+     * @param string $base
+     * @param array  $type
+     * @param string $parent
+     *
      * @return array
      */
     function pluginAssets(string $names, string $base = 'local', array $type = ['css', 'js'], string $parent = ''): array
     {
         $names = (array) $names;
 
-        $localPath = preg_replace('/\/+$/', '', config('yusronarif.core.plugins.public_path', 'plugins')).'/';
-        $package = config('yusronarif.core.plugins.config_path', 'yusronarif.plugins').".{$parent}";
+        $localPath = preg_replace('/\/+$/', '', config('koffinate.core.plugins.public_path', 'plugins')).'/';
+        $package = config('koffinate.core.plugins.config_path', 'koffinate.plugins').".{$parent}";
         $httpPattern = '/^(http[s?]:)/i';
 
         $rs = [];
@@ -219,56 +205,38 @@ if (! function_exists('pluginAssets')) {
             foreach ($type as $t) {
                 $rs[$t] = '';
                 if (config()->has("{$package}{$name}.{$t}")) {
-                    foreach (config("{$package}{$name}.{$t}") as $file) {
-                        if ($t === 'css') {
-                            if (preg_match($httpPattern, $file)) {
-                                $src = $file;
-                            } else {
-                                if ($base === 'vendor') {
-                                    $src = vendor($file);
-                                } else {
-                                    $src = asset($localPath.$file);
-                                }
-                            }
-
-                            $rs[$t] .= '<link href="'.$src.'" rel="stylesheet">';
-                        }
-
-                        if ($t === 'js') {
-                            if (preg_match($httpPattern, $file)) {
-                                $src = $file;
-                            } else {
-                                if ($base === 'vendor') {
-                                    $src = vendor($file);
-                                } else {
-                                    $src = asset($localPath.$file);
-                                }
-                            }
-
-                            $rs[$t] .= '<script src="'.$src.'"></script>';
-                        }
-
-                        unset($src);
+                    $legacyCondition = null;
+                    if ($t === 'legacy') {
+                        $legacyCondition = config("{$package}{$name}.legacy")['condition'];
+                        $rs[$t] .= $legacyCondition[0];
                     }
-                }
 
-                if ($lgc = config("{$package}{$name}.legacy")) {
-                    $rs[$t] .= $lgc['condition'][0];
-                    foreach ($lgc['src'] as $file) {
+                    foreach (config("{$package}{$name}.{$t}") as $file) {
                         if (preg_match($httpPattern, $file)) {
                             $src = $file;
                         } else {
-                            if ($base === 'vendor') {
-                                $src = vendor($file);
-                            } else {
-                                $src = asset($localPath.$file);
+                            $src = match ($base) {
+                                'vendor' => vendor($file),
+                                'local' => asset($localPath.$file),
+                                default => null,
+                            };
+                        }
+
+                        if ($src) {
+                            if ($t === 'css') {
+                                $rs[$t] .= "<link href='{$src}' rel='stylesheet'>";
+                            }
+                            if ($t === 'js') {
+                                $rs[$t] .= "<script src='{$src}'></script>";
                             }
                         }
 
-                        $rs[$t] .= '<script src="'.$src.'"></script>';
                         unset($src);
                     }
-                    $rs[$t] .= $lgc['condition'][1];
+
+                    if ($legacyCondition) {
+                        $rs[$t] .= $legacyCondition[1];
+                    }
                 }
             }
         }
@@ -277,21 +245,29 @@ if (! function_exists('pluginAssets')) {
     }
 }
 
-if (! function_exists('carbon')) {
+if (!function_exists('carbon')) {
     /**
-     * Carbon helper.
+     * @param string|\DateTimeInterface|null $datetime
+     * @param \DateTimeZone|string|null      $timezone
+     * @param string|null                    $locale
      *
-     * @param  string|DateTimeInterface|null  $datetime
-     * @param  DateTimeZone|string|null  $tz
-     * @return Carbon|null
+     * @return Carbon
      */
-    function carbon(DateTimeInterface|string|null $datetime = null, DateTimeZone|string|null $tz = 'Asia/Jakarta'): ?Carbon
+    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, ?string $locale = null): Carbon
     {
-        try {
-            return ! $datetime ? Carbon::now($tz) : Carbon::parse($datetime, $tz);
-        } catch (\Exception $e) {
-            return carbon($datetime, $tz);
+        if (auth()->check()) {
+            if (!$timezone && auth()->user()?->timezone) {
+                $timezone = auth()->user()->timezone;
+            }
+            if (!$locale && auth()->user()?->locale) {
+                $locale = auth()->user()->locale;
+            }
         }
+        Carbon::setLocale($locale ?? 'id_ID');
+        if (!$datetime) {
+            return Carbon::now()->timezone($timezone);
+        }
+        return Carbon::parse($datetime)->timezone($timezone);
     }
 }
 
@@ -299,32 +275,16 @@ if (! function_exists('isDev')) {
     /**
      * Development Mode Checker.
      *
-     * @param  string  $isTrue
-     * @param  string  $isFalse
-     * @return bool|\Illuminate\Session\SessionManager|\Illuminate\Session\Store|mixed|string
+     * @return bool
      */
-    function isDev(string $isTrue = '', string $isFalse = '')
+    function isDev(): bool
     {
-        if (session('dev_mode') != null) {
-            $return = session('dev_mode');
-        } else {
-            $return = false;
-            $dev = env('APP_DEVMODE', 'off');
-
-            if ($dev && in_array(strtolower($dev), ['true', '1', 'on'])) {
-                $return = true;
-            }
+        if (\Illuminate\Support\Facades\Session::has('dev_mode')) {
+            return \Illuminate\Support\Facades\Session::get('dev_mode', false);
         }
 
-        if ($isTrue) {
-            if ($return) {
-                return $isTrue;
-            } else {
-                return $isFalse;
-            }
-        }
-
-        return $return;
+        $dev = env('APP_DEVMODE', 'off');
+        return in_array(strtolower($dev), ['true', '1', 'on']);
     }
 }
 
@@ -333,6 +293,7 @@ if (! function_exists('hasRoute')) {
      * Existing Route by Name.
      *
      * @param  string  $name
+     *
      * @return bool
      */
     function hasRoute(string $name): bool
@@ -346,9 +307,10 @@ if (! function_exists('routed')) {
      * Existing Route by Name
      * with '#' fallback.
      *
-     * @param  string  $name
-     * @param  array  $parameters
-     * @param  bool  $absolute
+     * @param string $name
+     * @param array  $parameters
+     * @param bool   $absolute
+     *
      * @return string
      */
     function routed(string $name, array $parameters = [], bool $absolute = true): string
@@ -362,145 +324,145 @@ if (! function_exists('routed')) {
 }
 
 if (! function_exists('activeRoute')) {
-    function activeRoute(string $route = '', array $params = [], string $cssClass = 'active current'): string
+    /**
+     * @param string $route
+     * @param array  $params
+     *
+     * @return bool
+     */
+    function activeRoute(string $route = '', array $params = []): bool
     {
         if (empty($route = trim($route))) {
-            return '';
+            return false;
         }
 
-        if (request()->routeIs("{$route}*")) {
-            if (empty($params)) {
-                return $cssClass;
-            }
-
-            $requestRoute = request()->route();
-
-            foreach ($params as $key => $value) {
-                if (
-                    $requestRoute->parameter($key) instanceof \Illuminate\Database\Eloquent\Model
-                    && $value instanceof \Illuminate\Database\Eloquent\Model
-                    && $requestRoute->parameter($key)->id != $value->id
-                ) {
-                    return '';
+        try {
+            if (request()->routeIs($route, "{$route}.*")) {
+                if (empty($params)) {
+                    return true;
                 }
-                if ($requestRoute->parameter($key) != $value) {
-                    return '';
+
+                $requestRoute = request()->route();
+                $paramNames = $requestRoute->parameterNames();
+
+                foreach ($params as $key => $value) {
+                    if (is_int($key)) {
+                        $key = $paramNames[$key];
+                    }
+
+                    if (
+                        $requestRoute->parameter($key) instanceof \Illuminate\Database\Eloquent\Model
+                        && $value instanceof \Illuminate\Database\Eloquent\Model
+                        && $requestRoute->parameter($key)->id != $value->id
+                    ) {
+                        return false;
+                    }
+
+                    if (is_object($requestRoute->parameter($key))) {
+                        // try to check param is enum type
+                        try {
+                            if ($requestRoute->parameter($key)->value && $requestRoute->parameter($key)->value != $value) {
+                                return false;
+                            }
+                        } catch (Exception $e) {
+                            return false;
+                        }
+                    } else {
+                        if ($requestRoute->parameter($key) != $value) {
+                            return false;
+                        }
+                    }
                 }
+
+                return true;
             }
+        } catch (Exception $e) {}
 
-            return $cssClass;
-        }
-
-        return '';
+        return false;
     }
 }
 
-if (! function_exists('currencyFormat')) {
-    function currencyFormat(string $format, int|float $number): string
+if (! function_exists('activeCss')) {
+    /**
+     * @param string $route
+     * @param array  $params
+     * @param string $cssClass
+     *
+     * @return string
+     */
+    function activeCss(string $route = '', array $params = [], string $cssClass = 'active current'): string
     {
-        $regex = '/%((?:[\^!\-]|\+|\(|\=.)*)([0-9]+)?'.
-            '(?:#([0-9]+))?(?:\.([0-9]+))?([in%])/';
-        if (setlocale(LC_MONETARY, 0) == 'C') {
-            setlocale(LC_MONETARY, '');
-        }
-        $locale = localeconv();
-        preg_match_all($regex, $format, $matches, PREG_SET_ORDER);
-        foreach ($matches as $fmatch) {
-            $value = floatval($number);
-            $flags = [
-                'fillchar' => preg_match('/\=(.)/', $fmatch[1], $match) ?
-                    $match[1] : ' ',
-                'nogroup' => preg_match('/\^/', $fmatch[1]) > 0,
-                'usesignal' => preg_match('/\+|\(/', $fmatch[1], $match) ?
-                    $match[0] : '+',
-                'nosimbol' => preg_match('/\!/', $fmatch[1]) > 0,
-                'isleft' => preg_match('/\-/', $fmatch[1]) > 0,
-            ];
-            $width = trim($fmatch[2]) ? (int) $fmatch[2] : 0;
-            $left = trim($fmatch[3]) ? (int) $fmatch[3] : 0;
-            $right = trim($fmatch[4]) ? (int) $fmatch[4] : 0;
-            $conversion = $fmatch[5];
-
-            $positive = true;
-            if ($value < 0) {
-                $positive = false;
-                $value *= -1;
-            }
-            $letter = $positive ? 'p' : 'n';
-
-            $prefix = $suffix = $cprefix = $csuffix = $signal = '';
-
-            $signal = $positive ? $locale['positive_sign'] : $locale['negative_sign'];
-            switch (true) {
-                case $locale["{$letter}_sign_posn"] == 1 && $flags['usesignal'] == '+':
-                    $prefix = $signal;
-                    break;
-                case $locale["{$letter}_sign_posn"] == 2 && $flags['usesignal'] == '+':
-                    $suffix = $signal;
-                    break;
-                case $locale["{$letter}_sign_posn"] == 3 && $flags['usesignal'] == '+':
-                    $cprefix = $signal;
-                    break;
-                case $locale["{$letter}_sign_posn"] == 4 && $flags['usesignal'] == '+':
-                    $csuffix = $signal;
-                    break;
-                case $flags['usesignal'] == '(':
-                case $locale["{$letter}_sign_posn"] == 0:
-                    $prefix = '(';
-                    $suffix = ')';
-                    break;
-            }
-            if (! $flags['nosimbol']) {
-                $currency = $cprefix.
-                    ($conversion == 'i' ? $locale['int_curr_symbol'] : $locale['currency_symbol']).
-                    $csuffix;
-            } else {
-                $currency = '';
-            }
-            $space = $locale["{$letter}_sep_by_space"] ? chr(32) : '';
-
-            $value = number_format(
-                $value,
-                $right,
-                $locale['mon_decimal_point'],
-                $flags['nogroup'] ? '' : $locale['mon_thousands_sep']
-            );
-            $value = @explode($locale['mon_decimal_point'], $value);
-
-            $n = strlen($prefix) + strlen($currency) + strlen($value[0]);
-            if ($left > 0 && $left > $n) {
-                $value[0] = str_repeat($flags['fillchar'], $left - $n).$value[0];
-            }
-            $value = implode($locale['mon_decimal_point'], $value);
-            if ($locale["{$letter}_cs_precedes"]) {
-                $value = $prefix.$currency.$space.$value.$suffix;
-            } else {
-                $value = $prefix.$value.$space.$currency.$suffix;
-            }
-            if ($width > 0) {
-                $value = str_pad(
-                    $value,
-                    $width,
-                    $flags['fillchar'],
-                    $flags['isleft'] ?
-                        STR_PAD_RIGHT : STR_PAD_LEFT
-                );
-            }
-
-            $format = str_replace($fmatch[0], $value, $format);
-        }
-
-        return $format;
+        return activeRoute($route, $params) ? $cssClass : '';
     }
 }
 
 if (! function_exists('getRawSql')) {
     /**
-     * @param  \Illuminate\Database\Query\Builder|\Yusronarif\Core\Database\Query\Builder  $query
+     * @param \Illuminate\Database\Query\Builder|\Koffin\Core\Database\Query\Builder $query
+     *
      * @return string
      */
-    function getRawSql(\Illuminate\Database\Query\Builder|\Yusronarif\Core\Database\Query\Builder $query): string
+    function getRawSql(\Illuminate\Database\Query\Builder|\Koffin\Core\Database\Query\Builder $query): string
     {
         return Str::replaceArray('?', $query->getBindings(), $query->toSql());
+    }
+}
+
+if (! function_exists('getErrors'))
+{
+    /**
+     * Feedback CSS Class
+     *
+     * @param string|null $key
+     * @param string|null $bag
+     *
+     * @return ?ViewErrorBag
+     */
+    function getErrors(?string $key = null, ?string $bag = null): ?ViewErrorBag
+    {
+        $errors = session('errors');
+        if (empty($key) || empty($errors)) return null;
+        if ($bag) {
+            if (empty($errors->$bag->all())) return null;
+            $errors = $errors->$bag;
+        }
+
+        return $errors;
+    }
+}
+
+if (! function_exists('hasError'))
+{
+    /**
+     * Feedback CSS Class
+     *
+     * @param string|array|null $key
+     * @param string|null $bag
+     *
+     * @return bool
+     */
+    function hasError(string|array|null $key = null, ?string $bag = null): bool
+    {
+        if (($errors = getErrors($key, $bag)) instanceof ViewErrorBag === false) return false;
+        return $errors->has($key);
+    }
+}
+
+if (!function_exists('paginateStyleReset')) {
+    /**
+     * Style reset paginate
+     *
+     * @param $datas
+     *
+     * @return string
+     */
+    function paginateStyleReset($datas): string
+    {
+        try {
+            if (method_exists($datas, 'perPage') && method_exists($datas, 'currentPage')) {
+                return 'counter-reset: _rownum ' . ($datas->perPage() * ($datas->currentPage() - 1)) . ';';
+            }
+        } catch (Exception $e) {}
+        return '';
     }
 }

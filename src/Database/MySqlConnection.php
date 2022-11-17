@@ -1,10 +1,10 @@
 <?php
 
-namespace Yusronarif\Core\Database;
+namespace Koffin\Core\Database;
 
 use Illuminate\Database\MySqlConnection as BaseConnection;
 //use Illuminate\Database\Schema\MySqlBuilder as BaseBuilder;
-use Yusronarif\Core\Database\Schema\Blueprint;
+use Koffin\Core\Database\Schema\Blueprint;
 
 class MySqlConnection extends BaseConnection
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Yusronarif\Core\Database\Eloquent;
+namespace Koffin\Core\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Yusronarif\Core\Database\Eloquent\Concerns\HasTimestamps;
-use Yusronarif\Core\Database\Eloquent\Scopes\GeneralScope;
-use Yusronarif\Core\Support\Str;
+use Koffin\Core\Database\Eloquent\Concerns\HasTimestamps;
+use Koffin\Core\Database\Eloquent\Scopes\GeneralScope;
+use Koffin\Core\Support\Str;
 
 class Model extends BaseModel
 {

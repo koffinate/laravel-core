@@ -1,10 +1,10 @@
 <?php
 
-namespace Yusronarif\Core\Http\Middleware;
+namespace Koffin\Core\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\View\Factory as ViewFactory;
-use Yusronarif\Core\Foundation\Auth\User;
+use Koffin\Core\Foundation\Auth\User;
 
 /**
  * Share active user for all views.

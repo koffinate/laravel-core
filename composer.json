@@ -1,7 +1,7 @@
 {
-  "name": "yusronarif/laravel-core",
+  "name": "koffinate/laravel-core",
   "description": "Laravel Custom Core",
-  "keywords": ["php", "laravel", "library", "much", "yusron", "arif", "yusronarif"],
+  "keywords": ["php", "laravel", "library", "koffinate", "much", "yusron", "arif", "yusronarif"],
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -13,14 +13,13 @@
     }
   ],
   "require": {
-    "php": "^8.0",
+    "php": "^8.1",
     "ext-json": "*",
-    "composer-runtime-api": "^2.0",
-    "illuminate/auth": "^8.40|^9.0",
-    "illuminate/container": "^8.40|^9.0",
-    "illuminate/contracts": "^8.40|^9.0",
-    "illuminate/database": "^8.40|^9.0",
-    "illuminate/support": "^8.40|^9.0",
+    "illuminate/auth": "^9.0",
+    "illuminate/container": "^9.0",
+    "illuminate/contracts": "^9.0",
+    "illuminate/database": "^9.0",
+    "illuminate/support": "^9.0",
     "nesbot/carbon": "^2.0"
   },
   "require-dev": {
@@ -28,7 +27,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Yusronarif\\Core\\": "src/"
+      "Koffin\\Core\\": "src/",
+      "Koffin\\Enums\\": "enums/"
     },
     "files": [
       "helpers.php"
@@ -36,7 +36,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Yusronarif\\Core\\Test\\": "tests/"
+      "Koffin\\Core\\Test\\": "tests/"
     }
   },
   "scripts": {
@@ -47,11 +47,11 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "3.x-dev"
+      "dev-master": "1.x-dev"
     },
     "laravel": {
       "providers": [
-        "Yusronarif\\Core\\CoreServiceProvider"
+        "Koffin\\Core\\CoreServiceProvider"
       ],
       "aliases": {}
     }

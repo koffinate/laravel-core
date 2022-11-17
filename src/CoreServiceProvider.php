@@ -1,10 +1,10 @@
 <?php
 
-namespace Yusronarif\Core;
+namespace Koffin\Core;
 
 use Illuminate\Support\ServiceProvider;
-use Yusronarif\Core\Providers\BladeServiceProvider;
-use Yusronarif\Core\Providers\DbServiceProvider;
+use Koffin\Core\Providers\BladeServiceProvider;
+use Koffin\Core\Providers\DbServiceProvider;
 
 class CoreServiceProvider extends ServiceProvider
 {

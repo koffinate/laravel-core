@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Test;
+namespace Koffin\Core\Test;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;

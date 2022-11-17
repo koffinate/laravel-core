@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Database\Eloquent\Concerns;
+namespace Koffin\Core\Database\Eloquent\Concerns;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps as BaseHasTimestamps;
 

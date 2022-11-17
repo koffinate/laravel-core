@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Test;
+namespace Koffin\Core\Test;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;

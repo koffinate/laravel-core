@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Database\Eloquent;
+namespace Koffin\Core\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder as BaseBuilder;
 

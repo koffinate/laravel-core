@@ -1,6 +1,6 @@
 <?php
 
-namespace Yusronarif\Core\Support;
+namespace Koffin\Core\Support;
 
 use Illuminate\Support\Str as BaseStr;
 
