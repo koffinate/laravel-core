@@ -245,7 +245,7 @@ if (! function_exists('pluginAssets')) {
     }
 }
 
-if (!function_exists('trimAll')) {
+if (! function_exists('trimAll')) {
     /**
      * @param null|string $string
      * @param string $type
@@ -254,21 +254,25 @@ if (!function_exists('trimAll')) {
      * @return string
      * @throws Exception
      */
-    function trimAll(?String $string, String $type = 'smart', String $pattern = '\W+'): String
+    function trimAll(?string $string, string $type = 'smart', string $pattern = '\W+'): string
     {
-        if (!$string || trim($string)=='') return '';
-        if (! in_array($type, ['smart', 'both', 'left', 'right', 'all']))
-            throw new Exception("type of trim not valid, use smart|left|right|all instead.", 401);
+        if (! $string || trim($string) == '') {
+            return '';
+        }
+        if (! in_array($type, ['smart', 'both', 'left', 'right', 'all'])) {
+            throw new Exception('type of trim not valid, use smart|left|right|all instead.', 401);
+        }
 
         try {
             return match ($type) {
-                'both' => preg_replace('/^' . $pattern . '|' . $pattern . '$/i', '', $string),
-                'left' => preg_replace('/^' . $pattern . '/i', '', $string),
-                'right' => preg_replace('/' . $pattern . '$/i', '', $string),
-                'all' => preg_replace('/' . $pattern . '/i', '', $string),
-                default => preg_replace('/' . $pattern . '/i', ' ', preg_replace('/^' . $pattern . '|' . $pattern . '$/i', '', $string)),
+                'both' => preg_replace('/^'.$pattern.'|'.$pattern.'$/i', '', $string),
+                'left' => preg_replace('/^'.$pattern.'/i', '', $string),
+                'right' => preg_replace('/'.$pattern.'$/i', '', $string),
+                'all' => preg_replace('/'.$pattern.'/i', '', $string),
+                default => preg_replace('/'.$pattern.'/i', ' ', preg_replace('/^'.$pattern.'|'.$pattern.'$/i', '', $string)),
             };
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         return '';
     }
