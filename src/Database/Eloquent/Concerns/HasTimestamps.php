@@ -75,7 +75,7 @@ trait HasTimestamps
     public function creater()
     {
         if ($this->performerMode == 'users') {
-            return $this->belongsTo(config('yusronarifCore.model.users'), $this->getCreatedByColumn());
+            return $this->belongsTo(config('koffinate.core.model.users'), $this->getCreatedByColumn());
         } else {
             return $this->performerAsPlain($this->getCreatedByColumn());
         }
@@ -84,7 +84,7 @@ trait HasTimestamps
     public function updater()
     {
         if ($this->performerMode == 'users') {
-            return $this->belongsTo(config('yusronarifCore.model.users'), $this->getUpdatedByColumn());
+            return $this->belongsTo(config('koffinate.core.model.users'), $this->getUpdatedByColumn());
         } else {
             return $this->performerAsPlain($this->getUpdatedByColumn());
         }
