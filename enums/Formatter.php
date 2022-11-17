@@ -2,8 +2,6 @@
 
 namespace Koffin\Enums;
 
-use Exception;
-
 enum Formatter: string
 {
     case DATE_SHORT = 'L';
