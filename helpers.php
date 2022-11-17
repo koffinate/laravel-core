@@ -145,7 +145,7 @@ if (! function_exists('plugins')) {
      */
     function plugins(string|array|null $name = null, string $base = 'local', string|array $type = ['css', 'js']): void
     {
-        if (!$name) {
+        if (! $name) {
             return;
         }
         if (! in_array($base, ['vendor', 'local'])) {
@@ -245,7 +245,7 @@ if (! function_exists('pluginAssets')) {
     }
 }
 
-if (!function_exists('carbon')) {
+if (! function_exists('carbon')) {
     /**
      * @param string|\DateTimeInterface|null $datetime
      * @param \DateTimeZone|string|null      $timezone
@@ -256,17 +256,18 @@ if (!function_exists('carbon')) {
     function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, ?string $locale = null): Carbon
     {
         if (auth()->check()) {
-            if (!$timezone && auth()->user()?->timezone) {
+            if (! $timezone && auth()->user()?->timezone) {
                 $timezone = auth()->user()->timezone;
             }
-            if (!$locale && auth()->user()?->locale) {
+            if (! $locale && auth()->user()?->locale) {
                 $locale = auth()->user()->locale;
             }
         }
         Carbon::setLocale($locale ?? 'id_ID');
-        if (!$datetime) {
+        if (! $datetime) {
             return Carbon::now()->timezone($timezone);
         }
+
         return Carbon::parse($datetime)->timezone($timezone);
     }
 }
@@ -284,6 +285,7 @@ if (! function_exists('isDev')) {
         }
 
         $dev = env('APP_DEVMODE', 'off');
+
         return in_array(strtolower($dev), ['true', '1', 'on']);
     }
 }
@@ -376,7 +378,8 @@ if (! function_exists('activeRoute')) {
 
                 return true;
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
 
         return false;
     }
@@ -408,10 +411,9 @@ if (! function_exists('getRawSql')) {
     }
 }
 
-if (! function_exists('getErrors'))
-{
+if (! function_exists('getErrors')) {
     /**
-     * Feedback CSS Class
+     * Feedback CSS Class.
      *
      * @param string|null $key
      * @param string|null $bag
@@ -421,9 +423,13 @@ if (! function_exists('getErrors'))
     function getErrors(?string $key = null, ?string $bag = null): ?ViewErrorBag
     {
         $errors = session('errors');
-        if (empty($key) || empty($errors)) return null;
+        if (empty($key) || empty($errors)) {
+            return null;
+        }
         if ($bag) {
-            if (empty($errors->$bag->all())) return null;
+            if (empty($errors->$bag->all())) {
+                return null;
+            }
             $errors = $errors->$bag;
         }
 
@@ -431,10 +437,9 @@ if (! function_exists('getErrors'))
     }
 }
 
-if (! function_exists('hasError'))
-{
+if (! function_exists('hasError')) {
     /**
-     * Feedback CSS Class
+     * Feedback CSS Class.
      *
      * @param string|array|null $key
      * @param string|null $bag
@@ -443,14 +448,17 @@ if (! function_exists('hasError'))
      */
     function hasError(string|array|null $key = null, ?string $bag = null): bool
     {
-        if (($errors = getErrors($key, $bag)) instanceof ViewErrorBag === false) return false;
+        if (($errors = getErrors($key, $bag)) instanceof ViewErrorBag === false) {
+            return false;
+        }
+
         return $errors->has($key);
     }
 }
 
-if (!function_exists('paginateStyleReset')) {
+if (! function_exists('paginateStyleReset')) {
     /**
-     * Style reset paginate
+     * Style reset paginate.
      *
      * @param $datas
      *
@@ -460,9 +468,11 @@ if (!function_exists('paginateStyleReset')) {
     {
         try {
             if (method_exists($datas, 'perPage') && method_exists($datas, 'currentPage')) {
-                return 'counter-reset: _rownum ' . ($datas->perPage() * ($datas->currentPage() - 1)) . ';';
+                return 'counter-reset: _rownum '.($datas->perPage() * ($datas->currentPage() - 1)).';';
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
+
         return '';
     }
 }
