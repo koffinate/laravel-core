@@ -32,9 +32,9 @@ class Blueprint extends BaseBlueprint
     {
         parent::__construct($table, $callback, $prefix);
 
-        $userModel = config('yusronarif.core.model.users');
+        $userModel = config('koffinate.core.model.users');
         $this->tableUser = (new $userModel)->getTable();
-        $this->userKeyType = config('yusronarif.core.model.user_key_type', 'int');
+        $this->userKeyType = config('koffinate.core.model.user_key_type', 'int');
     }
 
     /**

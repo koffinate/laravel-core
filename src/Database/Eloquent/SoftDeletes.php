@@ -148,7 +148,7 @@ trait SoftDeletes
     public function deleter()
     {
         if ($this->performerMode == 'users') {
-            return $this->belongsTo(config('yusronarifCore.model.users'), $this->getDeletedByColumn());
+            return $this->belongsTo(config('koffinate.core.model.users'), $this->getDeletedByColumn());
         } else {
             return $this->performerAsPlain($this->getDeletedByColumn());
         }
@@ -157,7 +157,7 @@ trait SoftDeletes
     public function restorer()
     {
         if ($this->performerMode == 'users') {
-            return $this->belongsTo(config('yusronarifCore.model.users'), $this->getRestoreByColumn());
+            return $this->belongsTo(config('koffinate.core.model.users'), $this->getRestoreByColumn());
         } else {
             return $this->performerAsPlain($this->getRestoreByColumn());
         }
