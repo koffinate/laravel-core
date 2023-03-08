@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
 use Koffin\Core\Support\Str;
@@ -278,30 +277,55 @@ if (! function_exists('trimAll')) {
     }
 }
 
+if (!function_exists('fluent')) {
+    /**
+     * @param mixed|null $data
+     *
+     * @return \Illuminate\Support\Fluent
+     */
+    function fluent(mixed $data = null): \Illuminate\Support\Fluent
+    {
+        if (!(is_array($data) || is_object($data))) {
+            $data = [];
+        }
+        return \Illuminate\Support\Fluent($data);
+    }
+}
+
 if (! function_exists('carbon')) {
     /**
      * @param string|\DateTimeInterface|null $datetime
      * @param \DateTimeZone|string|null      $timezone
-     * @param string|null                    $locale
+     * @param string                         $locale
      *
-     * @return Carbon
+     * @return \Illuminate\Support\Carbon
      */
-    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, ?string $locale = null): Carbon
+    function carbon(
+        string|DateTimeInterface|null $datetime = null, 
+        string|DateTimeZone|null $timezone = null, 
+        string $locale = 'id_ID'
+    ): \Illuminate\Support\Carbon
     {
         if (auth()->check()) {
-            if (! $timezone && auth()->user()?->timezone) {
+            if (! $timezone && (auth()->user()?->timezone ?? null)) {
                 $timezone = auth()->user()->timezone;
             }
-            if (! $locale && auth()->user()?->locale) {
+            if (! $locale && (auth()->user()?->locale ?? null)) {
                 $locale = auth()->user()->locale;
             }
         }
-        Carbon::setLocale($locale ?? 'id_ID');
-        if (! $datetime) {
-            return Carbon::now()->timezone($timezone);
+
+        try {
+            \Illuminate\Support\Carbon::setLocale($locale);
+        } catch (\Exception $e) {
+            //
         }
 
-        return Carbon::parse($datetime)->timezone($timezone);
+        if (! $datetime) {
+            return \Illuminate\Support\Carbon::now()->timezone($timezone);
+        }
+
+        return \Illuminate\Support\Carbon::parse($datetime)->timezone($timezone);
     }
 }
 
