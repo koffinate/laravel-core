@@ -277,7 +277,7 @@ if (! function_exists('trimAll')) {
     }
 }
 
-if (!function_exists('fluent')) {
+if (! function_exists('fluent')) {
     /**
      * @param mixed|null $data
      *
@@ -285,9 +285,10 @@ if (!function_exists('fluent')) {
      */
     function fluent(mixed $data = null): \Illuminate\Support\Fluent
     {
-        if (!(is_array($data) || is_object($data))) {
+        if (! (is_array($data) || is_object($data))) {
             $data = [];
         }
+
         return \Illuminate\Support\Fluent($data);
     }
 }
@@ -301,11 +302,10 @@ if (! function_exists('carbon')) {
      * @return \Illuminate\Support\Carbon
      */
     function carbon(
-        string|DateTimeInterface|null $datetime = null, 
-        string|DateTimeZone|null $timezone = null, 
+        string|DateTimeInterface|null $datetime = null,
+        string|DateTimeZone|null $timezone = null,
         string $locale = 'id_ID'
-    ): \Illuminate\Support\Carbon
-    {
+    ): \Illuminate\Support\Carbon {
         if (auth()->check()) {
             if (! $timezone && (auth()->user()?->timezone ?? null)) {
                 $timezone = auth()->user()->timezone;
