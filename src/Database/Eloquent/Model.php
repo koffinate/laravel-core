@@ -75,9 +75,14 @@ class Model extends BaseModel
      */
     protected function performInsert(Builder $query)
     {
-        if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid'])) {
+        if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid', 'ulid'])) {
             $this->setIncrementing(false);
-            $this->setAttribute($this->getKeyName(), ($keyType == 'string' ? Str::uuid()->getHex() : Str::uuid())->toString());
+            $keyValue = match ($keyType) {
+                'string' => Str::orderedUuid()->getHex(),
+                'uuid' => Str::orderedUuid()->toString(),
+                'ulid' => Str::ulid()->toBase32(),
+            };
+            $this->setAttribute($this->getKeyName(), $keyValue);
         }
 
         return parent::performInsert($query);
@@ -126,12 +131,21 @@ class Model extends BaseModel
      *
      * @param  string|null  $performer
      */
-    protected function performerAsPlain(?string $performer = 'By System')
+    protected function performerAsPlain(?string $performer = null)
     {
         if (empty($performer)) {
-            throw new RelationNotFoundException();
+            // throw new RelationNotFoundException();
+            $performer = 'By System';
         }
 
-        return DB::select(DB::raw("SELECT null AS id, '{$performer}' AS name, '{$performer}' AS username, '{$performer}' AS email"));
+        $id = 0;
+        if ((config('koffinate.core.model.users'))->getKeyType() != 'int') {
+            $id = "'00000000-0000-0000-0000-000000000000'";
+        }
+        $performer = Str::of($performer)->trim();
+        $username = $performer->slug()->toString();
+        $email = "$username@" . config('koffinate.core.fake_mail_domain');
+
+        return DB::select(DB::raw("SELECT $id AS id, '{$performer->toString()}' AS name, '$username' AS username, '$email' AS email"));
     }
 }

@@ -4,6 +4,7 @@ namespace Koffin\Core\Database\Schema;
 
 use Closure;
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\Schema;
 use Koffin\Core\Support\Str;
 
@@ -93,73 +94,66 @@ class Blueprint extends BaseBlueprint
     }
 
     /**
-     * @param $fields
-     * @param  null  $connection
-     * @return \Illuminate\Database\Schema\ColumnDefinition
+     * Add the proper columns for a polymorphic table.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     * @return void
      */
-    public function setFields($fields, $connection = null)
+    public function morphs($name, $indexName = null)
     {
-        if (is_array($fields) && count($fields) > 0) {
-            foreach ($fields as $field => $attr) {
-                if (! Schema::connection($connection)->hasColumn($this->getTable(), $field)) {
-                    $type = preg_replace('/\s+/i', '', $attr['type']) ?: 'string';
-
-                    if (strpos($type, ':', 1)) {
-                        $epl = explode(':', $type);
-                        $type = $epl[0];
-                        $length = $epl[1];
-
-                        $t = $this->{$type}($field, ...explode(',', $length));
-                    } else {
-                        $t = $this->{$type}($field);
-                    }
-
-                    if (isset($attr['null'])) {
-                        $t->nullable((bool) $attr['null']);
-                    }
-                    if (isset($attr['default'])) {
-                        $t->default($attr['default']);
-                    }
-                    if (isset($attr['comment'])) {
-                        $t->comment($attr['comment']);
-                    }
-                }
-            }
+        if (Builder::$defaultMorphKeyType === 'string') {
+            $this->stringMorphs($name, $indexName);
+        } else {
+            parent::morphs($name, $indexName);
         }
     }
 
     /**
-     * @param $foreigns
-     * @param  null  $connection
-     * @return \Illuminate\Database\Schema\ColumnDefinition
+     * Add nullable columns for a polymorphic table.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     * @return void
      */
-    public function setForeigns($foreigns, $connection = null)
+    public function nullableMorphs($name, $indexName = null)
     {
-        if (is_array($foreigns) && count($foreigns) > 0) {
-            $currentTable = $this->getTable();
-            $fullTable = config('database.current_schema').'.'.$this->getTable();
-            $fullTable = Str::forceSnake($fullTable);
-
-            $sm = Schema::connection($connection)->getConnection()->getDoctrineSchemaManager();
-            $fkeys = array_map(function ($a) {
-                return $a->getName();
-            }, $sm->listTableForeignKeys($this->getTable()));
-
-            foreach ($foreigns as $tbl => $tblAttr) {
-                foreach ($tblAttr as $key => $ref) {
-                    if (! is_array($ref)) {
-                        $vals['reference'] = $ref;
-                    } else {
-                        $vals = $ref;
-                    }
-
-                    if (! in_array("{$currentTable}_{$key}_foreign", $fkeys) && ! in_array("{$fullTable}_{$key}_foreign", $fkeys)) {
-                        $this->foreign($key)->references($vals['reference'])->on($tbl)
-                            ->onUpdate(isset($vals['onUpdate']) ? $vals['onUpdate'] : 'cascade')
-                            ->onDelete(isset($vals['onDelete']) ? $vals['onDelete'] : 'restrict');
-                    }
-                }
-            }
+        if (Builder::$defaultMorphKeyType === 'string') {
+            $this->nullableStringMorphs($name, $indexName);
+        } else {
+            parent::nullableMorphs($name, $indexName);
         }
+    }
+
+    /**
+     * Add the proper columns for a polymorphic table using string IDs.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     * @return void
+     */
+    public function stringMorphs($name, $indexName = null)
+    {
+        $this->string("{$name}_type");
+
+        $this->string("{$name}_id");
+
+        $this->index(["{$name}_type", "{$name}_id"], $indexName);
+    }
+
+    /**
+     * Add nullable columns for a polymorphic table using string IDs.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     * @return void
+     */
+    public function nullableStringMorphs($name, $indexName = null)
+    {
+        $this->string("{$name}_type")->nullable();
+
+        $this->string("{$name}_id")->nullable();
+
+        $this->index(["{$name}_type", "{$name}_id"], $indexName);
     }
 }

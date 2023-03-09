@@ -11,6 +11,8 @@ return [
         'vendor' => env('VENDOR_URL', ''),
     ],
 
+    'fake_mail_domain' => env('FAKE_MAIL_DOMAIN', 'localdomain'),
+
     'plugins' => [
         'config_path' => 'koffinate.plugins',
         'public_path' => 'plugins', // without /public
