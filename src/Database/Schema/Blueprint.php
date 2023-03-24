@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\Schema;
-use Koffin\Core\Support\Str;
 
 class Blueprint extends BaseBlueprint
 {
