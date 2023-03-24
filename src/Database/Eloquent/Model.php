@@ -4,8 +4,8 @@ namespace Koffin\Core\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Fluent;
 use Koffin\Core\Database\Eloquent\Concerns\HasTimestamps;
 use Koffin\Core\Database\Eloquent\Scopes\GeneralScope;
 use Koffin\Core\Support\Str;
@@ -75,15 +75,20 @@ class Model extends BaseModel
      */
     protected function performInsert(Builder $query)
     {
-        if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid'])) {
+        if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid', 'ulid'])) {
             $this->setIncrementing(false);
-            $this->setAttribute($this->getKeyName(), ($keyType == 'string' ? Str::uuid()->getHex() : Str::uuid())->toString());
+            $keyValue = match ($keyType) {
+                'string' => Str::orderedUuid()->getHex(),
+                'uuid' => Str::orderedUuid()->toString(),
+                'ulid' => Str::ulid()->toBase32(),
+            };
+            $this->setAttribute($this->getKeyName(), $keyValue);
         }
 
         return parent::performInsert($query);
     }
 
-    /**
+    /*/**
      * Set the keys for a save update query.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
@@ -103,7 +108,7 @@ class Model extends BaseModel
         return $query;
     }*/
 
-    /**
+    /*/**
      * Get the primary key value for a save query.
      *
      * @return mixed
@@ -124,14 +129,27 @@ class Model extends BaseModel
     /**
      * generate performer from plain performer.
      *
-     * @param  string|null  $performer
+     * @param string|null $performer
+     *
+     * @return \Illuminate\Support\Fluent
      */
-    protected function performerAsPlain(?string $performer = 'By System')
+    protected function performerAsPlain(?string $performer = null): Fluent
     {
         if (empty($performer)) {
-            throw new RelationNotFoundException();
+            // throw new RelationNotFoundException();
+            $performer = 'By System';
         }
 
-        return DB::select(DB::raw("SELECT null AS id, '{$performer}' AS name, '{$performer}' AS username, '{$performer}' AS email"));
+        $id = 0;
+        if ((config('koffinate.core.model.users'))->getKeyType() != 'int') {
+            $id = "'00000000-0000-0000-0000-000000000000'";
+        }
+        $performer = Str::of($performer)->trim();
+        $username = $performer->slug()->toString();
+        $email = "$username@" . config('koffinate.core.fake_mail_domain');
+
+        $select = "SELECT $id AS id, '{$performer->toString()}' AS name, '$username' AS username, '$email' AS email";
+
+        return new Fluent(DB::select($select));
     }
 }
