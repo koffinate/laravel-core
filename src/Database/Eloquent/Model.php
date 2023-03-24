@@ -141,12 +141,12 @@ class Model extends BaseModel
         }
 
         $id = 0;
-        if ((config('koffinate.core.model.users'))->getKeyType() != 'int') {
+        if (config('koffinate.core.model.users')->getKeyType() != 'int') {
             $id = "'00000000-0000-0000-0000-000000000000'";
         }
         $performer = Str::of($performer)->trim();
         $username = $performer->slug()->toString();
-        $email = "$username@" . config('koffinate.core.fake_mail_domain');
+        $email = "$username@".config('koffinate.core.fake_mail_domain');
 
         $select = "SELECT $id AS id, '{$performer->toString()}' AS name, '$username' AS username, '$email' AS email";
 
