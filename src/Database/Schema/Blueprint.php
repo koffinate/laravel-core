@@ -26,6 +26,7 @@ class Blueprint extends BaseBlueprint
      * @param  string  $table
      * @param  \Closure|null  $callback
      * @param  string  $prefix
+     *
      * @return void
      */
     public function __construct($table, Closure $callback = null, $prefix = '')
@@ -41,6 +42,7 @@ class Blueprint extends BaseBlueprint
      * Add nullable creation and update timestamps to the table.
      *
      * @param  int  $precision
+     *
      * @return void
      */
     public function timestamps($precision = 0)
@@ -69,6 +71,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $column
      * @param  int  $precision
+     *
      * @return \Illuminate\Database\Schema\ColumnDefinition
      */
     public function softDeletes($column = 'deleted_at', $precision = 0)
@@ -97,6 +100,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $name
      * @param  string|null  $indexName
+     *
      * @return void
      */
     public function morphs($name, $indexName = null)
@@ -113,6 +117,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $name
      * @param  string|null  $indexName
+     *
      * @return void
      */
     public function nullableMorphs($name, $indexName = null)
@@ -129,6 +134,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $name
      * @param  string|null  $indexName
+     *
      * @return void
      */
     public function stringMorphs($name, $indexName = null)
@@ -145,6 +151,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $name
      * @param  string|null  $indexName
+     *
      * @return void
      */
     public function nullableStringMorphs($name, $indexName = null)

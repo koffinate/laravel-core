@@ -43,6 +43,7 @@ class Model extends BaseModel
      * Create a new Eloquent model instance.
      *
      * @param  array  $attributes
+     *
      * @return void
      */
     public function __construct(array $attributes = [])
@@ -71,6 +72,7 @@ class Model extends BaseModel
      * Perform a model insert operation.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
+     *
      * @return bool
      */
     protected function performInsert(Builder $query)

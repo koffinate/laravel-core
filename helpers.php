@@ -7,6 +7,7 @@ use Koffin\Core\Support\Str;
 if (! function_exists('f')) {
     /**
      * @param  string  $text
+     *
      * @return string
      */
     function f(string $text = ''): string
@@ -251,6 +252,7 @@ if (! function_exists('trimAll')) {
      * @param string $pattern
      *
      * @return string
+     *
      * @throws Exception
      */
     function trimAll(?string $string, string $type = 'smart', string $pattern = '\W+'): string
