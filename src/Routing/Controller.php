@@ -157,6 +157,7 @@ class Controller extends BaseController
             throw new Exception("Variable [$name] is reserved by this controller");
         }
         $this->controllerData[$name] = $value;
+
         return $this;
     }
 
@@ -171,6 +172,7 @@ class Controller extends BaseController
     protected function setPageMeta(string $key, mixed $value): self
     {
         $this->pageMeta[$key] = $value;
+
         return $this;
     }
 
@@ -184,6 +186,7 @@ class Controller extends BaseController
     protected function setPageTitle(string $title): self
     {
         $this->controllerData['pageTitle'] = $title;
+
         return $this;
     }
 
@@ -197,6 +200,7 @@ class Controller extends BaseController
     protected function setBackLink(string $link): self
     {
         $this->controllerData['backLink'] = $link;
+
         return $this;
     }
 
@@ -275,6 +279,7 @@ class Controller extends BaseController
      * Breadcrumb formatter.
      *
      * @param  array  $breadcrumb
+     *
      * @return object
      */
     #[Pure]
