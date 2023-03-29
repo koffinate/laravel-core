@@ -90,6 +90,7 @@ class Controller extends BaseController
      * Serve blade template.
      *
      * @param  string  $view
+     *
      * @return View
      */
     protected function view(string $view): View
@@ -130,6 +131,7 @@ class Controller extends BaseController
      *
      * @param  string|array  $name
      * @param  mixed  $value
+     *
      * @return void
      */
     protected function setDefault(string|array $name, mixed $value = null): void
@@ -142,47 +144,67 @@ class Controller extends BaseController
     /**
      * Set controller data.
      *
-     * @param  string  $name
-     * @param  mixed  $value
-     * @return void
+     * @param string $name
+     * @param mixed $value
      *
-     * @throws Exception
+     * @return \Koffin\Core\Routing\Controller
+     *
+     * @throws \Exception
      */
-    protected function setData(string $name, mixed $value): void
+    protected function setData(string $name, mixed $value): self
     {
         if (in_array($name, $this->reservedVariables)) {
             throw new Exception("Variable [$name] is reserved by this controller");
         }
         $this->controllerData[$name] = $value;
+        return $this;
     }
 
     /**
      * Set page meta.
      *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return \Koffin\Core\Routing\Controller
      */
-    protected function setPageMeta(string $key, mixed $value): void
+    protected function setPageMeta(string $key, mixed $value): self
     {
         $this->pageMeta[$key] = $value;
+        return $this;
     }
 
     /**
      * Set Page title.
      *
-     * @param  string  $title
-     * @return void
+     * @param string $title
+     *
+     * @return \Koffin\Core\Routing\Controller
      */
-    protected function setPageTitle(string $title): void
+    protected function setPageTitle(string $title): self
     {
         $this->controllerData['pageTitle'] = $title;
+        return $this;
+    }
+
+    /**
+     * Set Back Link.
+     *
+     * @param string $link
+     *
+     * @return \Koffin\Core\Routing\Controller
+     */
+    protected function setBackLink(string $link): self
+    {
+        $this->controllerData['backLink'] = $link;
+        return $this;
     }
 
     /**
      * Set Active Menu.
      *
      * @param  string|array  $menu
+     *
      * @return void
      */
     protected function setActiveMenu(string|array $menu): void
@@ -194,6 +216,7 @@ class Controller extends BaseController
      * Add Active Menu.
      *
      * @param  string|array  $menu
+     *
      * @return void
      */
     protected function addActiveMenu(string|array $menu): void
@@ -204,7 +227,8 @@ class Controller extends BaseController
     /**
      * Set BreadCrumb.
      *
-     * @param  string|array  $breadcrumb
+     * @param string|array $breadcrumb
+     *
      * @return void
      */
     protected function setBreadCrumb(string|array $breadcrumb): void
@@ -229,6 +253,7 @@ class Controller extends BaseController
      * Add BreadCrumb.
      *
      * @param  string|array  $breadcrumb
+     *
      * @return void
      */
     protected function addBreadCrumb(string|array $breadcrumb): void
