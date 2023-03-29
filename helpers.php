@@ -289,7 +289,7 @@ if (! function_exists('fluent')) {
             $data = [];
         }
 
-        return \Illuminate\Support\Fluent($data);
+        return new \Illuminate\Support\Fluent($data);
     }
 }
 
