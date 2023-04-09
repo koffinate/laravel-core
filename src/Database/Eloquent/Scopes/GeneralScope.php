@@ -2,30 +2,30 @@
 
 namespace Koffin\Core\Database\Eloquent\Scopes;
 
-use Koffin\Core\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 
 trait GeneralScope
 {
     /**
-     * @param  Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  string  $field
-     * @param $value
+     * @param  string  $value
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeByMd5(Builder $query, string $field, $value)
+    public function scopeByMd5(Builder $query, string $field, string $value): Builder
     {
         return $query->whereRaw("MD5(CAST({$field} AS VARCHAR)) = '{$value}'");
     }
 
     /**
-     * @param  Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  string  $field
-     * @param $value
+     * @param  string  $value
      *
-     * @return Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeByMd5Not(Builder $query, string $field, $value)
+    public function scopeByMd5Not(Builder $query, string $field, string $value): Builder
     {
         return $query->whereRaw("MD5(CAST({$field} AS VARCHAR)) <> '{$value}'");
     }

@@ -3,6 +3,8 @@
 namespace Koffin\Core\Database\Eloquent\Concerns;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps as BaseHasTimestamps;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Fluent;
 
 trait HasTimestamps
 {
@@ -15,16 +17,9 @@ trait HasTimestamps
      *
      * @return $this
      */
-    public function setCreatedAt($value)
+    public function setCreatedAt($value): static
     {
-        if (auth()->user() && empty($this->performBy)) {
-            if ($this->performerMode == 'users') {
-                $this->performBy = auth()->user()->id;
-            } else {
-                $this->performBy = auth()->user()->name ?? auth()->user()->username ?? auth()->user()->email ?? auth()->user()->id;
-            }
-        }
-
+        $this->setPerformedBy();
         $this->{$this->getCreatedAtColumn()} = $value;
         $this->{$this->getCreatedByColumn()} = $this->performBy;
 
@@ -38,16 +33,9 @@ trait HasTimestamps
      *
      * @return $this
      */
-    public function setUpdatedAt($value)
+    public function setUpdatedAt($value): static
     {
-        if (auth()->user() && empty($this->performBy)) {
-            if ($this->performerMode == 'users') {
-                $this->performBy = auth()->user()->id;
-            } else {
-                $this->performBy = auth()->user()->name ?? auth()->user()->username ?? auth()->user()->email ?? auth()->user()->id;
-            }
-        }
-
+        $this->setPerformedBy();
         $this->{$this->getUpdatedAtColumn()} = $value;
         $this->{$this->getUpdatedByColumn()} = $this->performBy;
 
@@ -59,7 +47,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getCreatedByColumn()
+    public function getCreatedByColumn(): string
     {
         return defined('static::CREATED_BY') ? static::CREATED_BY : 'created_by';
     }
@@ -69,12 +57,17 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getUpdatedByColumn()
+    public function getUpdatedByColumn(): string
     {
         return defined('static::UPDATED_BY') ? static::UPDATED_BY : 'updated_by';
     }
 
-    public function creater()
+    /**
+     * Creator of the relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Illuminate\Support\Fluent
+     */
+    public function creator(): BelongsTo|Fluent
     {
         if ($this->performerMode == 'users') {
             return $this->belongsTo(config('koffinate.core.model.users'), $this->getCreatedByColumn());
@@ -83,7 +76,12 @@ trait HasTimestamps
         }
     }
 
-    public function updater()
+    /**
+     * Updater of the relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Illuminate\Support\Fluent
+     */
+    public function updater(): BelongsTo|Fluent
     {
         if ($this->performerMode == 'users') {
             return $this->belongsTo(config('koffinate.core.model.users'), $this->getUpdatedByColumn());

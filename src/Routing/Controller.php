@@ -3,11 +3,13 @@
 namespace Koffin\Core\Routing;
 
 use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use JetBrains\PhpStorm\Pure;
 
 /**
@@ -44,7 +46,7 @@ class Controller extends BaseController
     private array $pageMeta = [
         'description' => '',
         'keywords' => 'yusronarif, koffinate, laravel',
-        'author' => 'Yusron Arif <yusron.arif4::at::gmail.com',
+        'author' => 'Yusron Arif <yusron.arif4::at::gmail.com>',
         'generator' => 'Koffinate',
     ];
 
@@ -91,17 +93,20 @@ class Controller extends BaseController
      *
      * @param  string  $view
      *
-     * @return View
+     * @return \Illuminate\Contracts\View\View|\Inertia\Response
      */
-    protected function view(string $view): View
+    protected function view(string $view): View|InertiaResponse
     {
         $this->share();
 
-        if ($this->prefixView) {
-            $view = preg_replace('/(\.)+$/i', '', $this->prefixView).'.'.$view;
+        if (config('koffinate.blade.type') === 'blade') {
+            if ($this->prefixView) {
+                $view = preg_replace('/(\.)+$/i', '', $this->prefixView).'.'.$view;
+            }
+            return view($view, $this->controllerData);
         }
 
-        return view($view, $this->controllerData);
+        return Inertia::render($view, $this->controllerData);
     }
 
     /**

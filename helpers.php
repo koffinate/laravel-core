@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Illuminate\Support\ViewErrorBag;
-use Koffin\Core\Support\Str;
 
 if (! function_exists('f')) {
     /**

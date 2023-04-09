@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Koffin\Core\Database\Eloquent\Concerns\HasTimestamps;
 use Koffin\Core\Database\Eloquent\Scopes\GeneralScope;
-use Koffin\Core\Support\Str;
+use Koffin\Core\Foundation\Auth\User;
 
 class Model extends BaseModel
 {
     use HasTimestamps, GeneralScope;
 
-    /*
+    /**
      * The list of table wich include with schema
      */
     protected string|array $fullnameTable = [];
@@ -27,7 +28,7 @@ class Model extends BaseModel
     /**
      * Who is (user) as executor.
      */
-    protected $performBy = null;
+    protected ?string $performBy = null;
 
     /**
      * The attributes that should be hidden for arrays.
@@ -59,7 +60,7 @@ class Model extends BaseModel
      *
      * @return bool
      */
-    public function getIncrementing()
+    public function getIncrementing(): bool
     {
         if (in_array(strtolower($this->getKeyType()), ['string', 'uuid'])) {
             return false;
@@ -75,7 +76,7 @@ class Model extends BaseModel
      *
      * @return bool
      */
-    protected function performInsert(Builder $query)
+    protected function performInsert(Builder $query): bool
     {
         if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid', 'ulid'])) {
             $this->setIncrementing(false);
@@ -152,6 +153,25 @@ class Model extends BaseModel
 
         $select = "SELECT $id AS id, '{$performer->toString()}' AS name, '$username' AS username, '$email' AS email";
 
-        return new Fluent(DB::select($select));
+        return new Fluent(DB::selectOne($select));
+    }
+
+    /**
+     * set performer from performer.
+     *
+     * @return void
+     */
+    protected function setPerformedBy(): void
+    {
+        if (auth()->user() && empty($this->performBy) && config('koffinate.core.use_perform_by')) {
+            $user = auth()->user();
+            if ($user instanceof User) {
+                if ($this->performerMode == 'users') {
+                    $this->performBy = $user->id;
+                } else {
+                    $this->performBy = $user->name ?? $user->username ?? $user->email ?? $user->id;
+                }
+            }
+        }
     }
 }

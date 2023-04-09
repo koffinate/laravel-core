@@ -13,17 +13,11 @@ trait SoftDeletes
      *
      * @return void
      */
-    protected function runSoftDelete()
+    protected function runSoftDelete(): void
     {
         $query = $this->setKeysForSaveQuery($this->newModelQuery());
 
-        if (auth()->user() && empty($this->performBy)) {
-            if ($this->performerMode == 'users') {
-                $this->performBy = auth()->user()->id;
-            } else {
-                $this->performBy = auth()->user()->name ?? auth()->user()->username ?? auth()->user()->email ?? auth()->user()->id;
-            }
-        }
+        $this->setPerformedBy();
 
         $time = $this->freshTimestamp();
 
@@ -51,7 +45,7 @@ trait SoftDeletes
      *
      * @return bool|null
      */
-    public function restore()
+    public function restore(): ?bool
     {
         // If the restoring event does not return false, we will proceed with this
         // restore operation. Otherwise, we bail out so the developer will stop
@@ -60,13 +54,7 @@ trait SoftDeletes
             return false;
         }
 
-        if (auth()->user() && empty($this->performBy)) {
-            if ($this->performerMode == 'users') {
-                $this->performBy = auth()->user()->id;
-            } else {
-                $this->performBy = auth()->user()->name ?? auth()->user()->username ?? auth()->user()->email ?? auth()->user()->id;
-            }
-        }
+        $this->setPerformedBy();
 
         $this->{$this->getDeletedAtColumn()} = null;
         $this->{$this->getDeletedByColumn()} = null;
@@ -90,7 +78,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getDeletedByColumn()
+    public function getDeletedByColumn(): string
     {
         return defined('static::DELETED_BY') ? static::DELETED_BY : 'deleted_by';
     }
@@ -100,7 +88,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getRestoreAtColumn()
+    public function getRestoreAtColumn(): string
     {
         return defined('static::RESTORE_AT') ? static::RESTORE_AT : 'restore_at';
     }
@@ -110,7 +98,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getRestoreByColumn()
+    public function getRestoreByColumn(): string
     {
         return defined('static::RESTORE_BY') ? static::RESTORE_BY : 'restore_by';
     }
@@ -120,7 +108,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getQualifiedDeletedByColumn()
+    public function getQualifiedDeletedByColumn(): string
     {
         return $this->qualifyColumn($this->getDeletedByColumn());
     }
@@ -130,7 +118,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getQualifiedRestoreAtColumn()
+    public function getQualifiedRestoreAtColumn(): string
     {
         return $this->qualifyColumn($this->getRestoreAtColumn());
     }
@@ -140,12 +128,12 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getQualifiedRestoreByColumn()
+    public function getQualifiedRestoreByColumn(): string
     {
         return $this->qualifyColumn($this->getRestoreByColumn());
     }
 
-    public function deleter()
+    public function deleter(): string
     {
         if ($this->performerMode == 'users') {
             return $this->belongsTo(config('koffinate.core.model.users'), $this->getDeletedByColumn());
@@ -154,7 +142,7 @@ trait SoftDeletes
         }
     }
 
-    public function restorer()
+    public function restorer(): string
     {
         if ($this->performerMode == 'users') {
             return $this->belongsTo(config('koffinate.core.model.users'), $this->getRestoreByColumn());

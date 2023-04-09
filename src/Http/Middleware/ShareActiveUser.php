@@ -4,6 +4,8 @@ namespace Koffin\Core\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Http\Request;
+use Inertia\ResponseFactory as InertiaResponseFactory;
 use Koffin\Core\Foundation\Auth\User;
 
 /**
@@ -16,16 +18,16 @@ class ShareActiveUser
     /**
      * The view factory implementation.
      *
-     * @var \Illuminate\Contracts\View\Factory
+     * @var \Illuminate\Contracts\View\Factory|\Inertia\ResponseFactory
      */
-    protected $view;
+    protected ViewFactory|InertiaResponseFactory $view;
 
     /**
      * Create a new error binder instance.
      *
-     * @param  \Illuminate\Contracts\View\Factory  $view
+     * @param  \Illuminate\Contracts\View\Factory|\Inertia\ResponseFactory  $view
      */
-    public function __construct(ViewFactory $view)
+    public function __construct(ViewFactory|InertiaResponseFactory $view)
     {
         $this->view = $view;
     }
@@ -38,7 +40,7 @@ class ShareActiveUser
      *
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         $this->view->share(
             'activeUser', (auth()->user() != null) ? auth()->user() : new User()

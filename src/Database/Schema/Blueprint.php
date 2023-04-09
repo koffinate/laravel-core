@@ -5,6 +5,7 @@ namespace Koffin\Core\Database\Schema;
 use Closure;
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 use Illuminate\Database\Schema\Builder;
+use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\Schema;
 
 class Blueprint extends BaseBlueprint
@@ -45,7 +46,7 @@ class Blueprint extends BaseBlueprint
      *
      * @return void
      */
-    public function timestamps($precision = 0)
+    public function timestamps($precision = 0): void
     {
         $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
 
@@ -74,11 +75,11 @@ class Blueprint extends BaseBlueprint
      *
      * @return \Illuminate\Database\Schema\ColumnDefinition
      */
-    public function softDeletes($column = 'deleted_at', $precision = 0)
+    public function softDeletes($column = 'deleted_at', $precision = 0): ColumnDefinition
     {
         $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
 
-        $this->timestamp($column, $precision)->nullable();
+        $deletedColum = $this->timestamp($column, $precision)->nullable();
         if ($this->performerMode == 'users') {
             $this->{$foreignType}('deleted_by')->nullable()
                 ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
@@ -93,6 +94,8 @@ class Blueprint extends BaseBlueprint
         } else {
             $this->string('restore_by', 100)->nullable();
         }
+
+        return $deletedColum;
     }
 
     /**
@@ -103,7 +106,7 @@ class Blueprint extends BaseBlueprint
      *
      * @return void
      */
-    public function morphs($name, $indexName = null)
+    public function morphs($name, $indexName = null): void
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->stringMorphs($name, $indexName);
@@ -120,7 +123,7 @@ class Blueprint extends BaseBlueprint
      *
      * @return void
      */
-    public function nullableMorphs($name, $indexName = null)
+    public function nullableMorphs($name, $indexName = null): void
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->nullableStringMorphs($name, $indexName);
@@ -137,13 +140,15 @@ class Blueprint extends BaseBlueprint
      *
      * @return void
      */
-    public function stringMorphs($name, $indexName = null)
+    public function stringMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type");
+        $this->unsignedBigInteger("{$name}_id");
+        $this->uuid("{$name}_uuid");
+        $this->ulid("{$name}_ulid");
+        $this->string("{$name}_string");
 
-        $this->string("{$name}_id");
-
-        $this->index(["{$name}_type", "{$name}_id"], $indexName);
+        $this->setMorphIndex($name, $indexName);
     }
 
     /**
@@ -154,12 +159,22 @@ class Blueprint extends BaseBlueprint
      *
      * @return void
      */
-    public function nullableStringMorphs($name, $indexName = null)
+    public function nullableStringMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type")->nullable();
+        $this->unsignedBigInteger("{$name}_id")->nullable();
+        $this->uuid("{$name}_uuid")->nullable();
+        $this->ulid("{$name}_ulid")->nullable();
+        $this->string("{$name}_string")->nullable();
 
-        $this->string("{$name}_id")->nullable();
+        $this->setMorphIndex($name, $indexName);
+    }
 
+    protected function setMorphIndex(string $name, string $indexName = null): void
+    {
         $this->index(["{$name}_type", "{$name}_id"], $indexName);
+        $this->index(["{$name}_type", "{$name}_uuid"], $indexName ? "{$indexName}_uuid" : null);
+        $this->index(["{$name}_type", "{$name}_ulid"], $indexName ? "{$indexName}_ulid" : null);
+        $this->index(["{$name}_type", "{$name}_string"], $indexName ? "{$indexName}_string" : null);
     }
 }
