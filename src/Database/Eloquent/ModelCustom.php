@@ -6,6 +6,7 @@ trait ModelCustom
 {
     /**
      * @var string
+     *
      * @value int|string
      */
     protected $primaryValue = 'int';

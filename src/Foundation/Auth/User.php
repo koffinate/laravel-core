@@ -17,4 +17,10 @@ class User extends Model implements
     CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
+
+    protected int|string $id;
+    protected string $username;
+    protected string $name;
+    protected string $email;
+    protected string $phone;
 }

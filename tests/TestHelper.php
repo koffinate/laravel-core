@@ -11,6 +11,7 @@ class TestHelper
     /**
      * @param  string  $middleware
      * @param  object  $parameter
+     *
      * @return int
      */
     public function testMiddleware($middleware, $parameter)
