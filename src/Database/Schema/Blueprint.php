@@ -110,11 +110,13 @@ class Blueprint extends BaseBlueprint
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->stringMorphs($name, $indexName);
+
             return;
         }
 
         if (Builder::$defaultMorphKeyType === 'any') {
             $this->anyMorphs($name, $indexName);
+
             return;
         }
 
@@ -133,11 +135,13 @@ class Blueprint extends BaseBlueprint
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->nullableStringMorphs($name, $indexName);
+
             return;
         }
 
         if (Builder::$defaultMorphKeyType === 'any') {
             $this->nullableAnyMorphs($name, $indexName);
+
             return;
         }
 
@@ -221,10 +225,10 @@ class Blueprint extends BaseBlueprint
         }
 
         foreach ($types as $type) {
-            $columnName = "{$name}_" . ($type === 'numeric' ? 'id' : $type);
+            $columnName = "{$name}_".($type === 'numeric' ? 'id' : $type);
             $currentIndexName = null;
             if ($indexName) {
-                $currentIndexName = $indexName . ($type === 'numeric' ? "" : "_{$type}");
+                $currentIndexName = $indexName.($type === 'numeric' ? '' : "_{$type}");
             }
 
             $this->index(["{$name}_type", $columnName], $currentIndexName);

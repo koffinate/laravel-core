@@ -16,7 +16,7 @@ class Model extends BaseModel
     use HasTimestamps, GeneralScope;
 
     /**
-     * The list of table wich include with schema
+     * The list of table wich include with schema.
      */
     protected string|array $fullnameTable = [];
 
