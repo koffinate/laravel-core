@@ -18,9 +18,9 @@ class User extends Model implements
 {
     use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
 
-    protected int|string $id;
-    protected string $username;
-    protected string $name;
-    protected string $email;
-    protected string $phone;
+    // protected int|string|null $id = null;
+    // protected ?string $username = null;
+    // protected ?string $name = null;
+    // protected ?string $email = null;
+    // protected ?string $phone = null;
 }

@@ -110,9 +110,15 @@ class Blueprint extends BaseBlueprint
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->stringMorphs($name, $indexName);
-        } else {
-            parent::morphs($name, $indexName);
+            return;
         }
+
+        if (Builder::$defaultMorphKeyType === 'any') {
+            $this->anyMorphs($name, $indexName);
+            return;
+        }
+
+        parent::morphs($name, $indexName);
     }
 
     /**
@@ -127,9 +133,15 @@ class Blueprint extends BaseBlueprint
     {
         if (Builder::$defaultMorphKeyType === 'string') {
             $this->nullableStringMorphs($name, $indexName);
-        } else {
-            parent::nullableMorphs($name, $indexName);
+            return;
         }
+
+        if (Builder::$defaultMorphKeyType === 'any') {
+            $this->nullableAnyMorphs($name, $indexName);
+            return;
+        }
+
+        parent::nullableMorphs($name, $indexName);
     }
 
     /**
@@ -143,12 +155,9 @@ class Blueprint extends BaseBlueprint
     public function stringMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type");
-        $this->unsignedBigInteger("{$name}_id");
-        $this->uuid("{$name}_uuid");
-        $this->ulid("{$name}_ulid");
         $this->string("{$name}_string");
 
-        $this->setMorphIndex($name, $indexName);
+        $this->setMorphIndex($name, $indexName, ['string']);
     }
 
     /**
@@ -162,6 +171,22 @@ class Blueprint extends BaseBlueprint
     public function nullableStringMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type")->nullable();
+        $this->string("{$name}_string")->nullable();
+
+        $this->setMorphIndex($name, $indexName, ['string']);
+    }
+
+    /**
+     * Add the proper columns for a polymorphic table using all type of IDs.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     *
+     * @return void
+     */
+    public function anyMorphs(string $name, ?string $indexName = null): void
+    {
+        $this->string("{$name}_type");
         $this->unsignedBigInteger("{$name}_id")->nullable();
         $this->uuid("{$name}_uuid")->nullable();
         $this->ulid("{$name}_ulid")->nullable();
@@ -170,11 +195,39 @@ class Blueprint extends BaseBlueprint
         $this->setMorphIndex($name, $indexName);
     }
 
-    protected function setMorphIndex(string $name, string $indexName = null): void
+    /**
+     * Add nullable columns for a polymorphic table using all type of IDs.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     *
+     * @return void
+     */
+    public function nullableAnyMorphs(string $name, ?string $indexName = null): void
     {
-        $this->index(["{$name}_type", "{$name}_id"], $indexName);
-        $this->index(["{$name}_type", "{$name}_uuid"], $indexName ? "{$indexName}_uuid" : null);
-        $this->index(["{$name}_type", "{$name}_ulid"], $indexName ? "{$indexName}_ulid" : null);
-        $this->index(["{$name}_type", "{$name}_string"], $indexName ? "{$indexName}_string" : null);
+        $this->string("{$name}_type")->nullable();
+        $this->unsignedBigInteger("{$name}_id")->nullable();
+        $this->uuid("{$name}_uuid")->nullable();
+        $this->ulid("{$name}_ulid")->nullable();
+        $this->string("{$name}_string")->nullable();
+
+        $this->setMorphIndex($name, $indexName);
+    }
+
+    protected function setMorphIndex(string $name, string $indexName = null, array $types = []): void
+    {
+        if (empty($types)) {
+            $types = ['numeric', 'uuid', 'ulid', 'string'];
+        }
+
+        foreach ($types as $type) {
+            $columnName = "{$name}_" . ($type === 'numeric' ? 'id' : $type);
+            $currentIndexName = null;
+            if ($indexName) {
+                $currentIndexName = $indexName . ($type === 'numeric' ? "" : "_{$type}");
+            }
+
+            $this->index(["{$name}_type", $columnName], $currentIndexName);
+        }
     }
 }

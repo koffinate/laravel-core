@@ -99,14 +99,14 @@ class Controller extends BaseController
     {
         $this->share();
 
-        if (config('koffinate.blade.type') === 'blade') {
-            if ($this->prefixView) {
-                $view = preg_replace('/(\.)+$/i', '', $this->prefixView).'.'.$view;
-            }
-            return view($view, $this->controllerData);
+        if (config('koffinate.core.breeze.type') === 'inertia') {
+            return Inertia::render($view, $this->controllerData);
         }
 
-        return Inertia::render($view, $this->controllerData);
+        if ($this->prefixView) {
+            $view = preg_replace('/(\.)+$/i', '', $this->prefixView).'.'.$view;
+        }
+        return view($view, $this->controllerData);
     }
 
     /**

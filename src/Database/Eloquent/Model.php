@@ -60,7 +60,7 @@ class Model extends BaseModel
      *
      * @return bool
      */
-    public function getIncrementing(): bool
+    public function getIncrementing()
     {
         if (in_array(strtolower($this->getKeyType()), ['string', 'uuid'])) {
             return false;
@@ -76,7 +76,7 @@ class Model extends BaseModel
      *
      * @return bool
      */
-    protected function performInsert(Builder $query): bool
+    protected function performInsert(Builder $query)
     {
         if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid', 'ulid'])) {
             $this->setIncrementing(false);
