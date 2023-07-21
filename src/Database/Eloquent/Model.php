@@ -163,7 +163,7 @@ class Model extends BaseModel
      */
     protected function setPerformedBy(): void
     {
-        if (auth()->user() && empty($this->performBy) && config('koffinate.core.use_perform_by')) {
+        if (auth()->user() && empty($this->performBy) && config('koffinate.core.model.use_perform_by')) {
             $user = auth()->user();
             if ($user instanceof User) {
                 if ($this->performerMode == 'users') {
