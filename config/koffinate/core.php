@@ -6,14 +6,14 @@ return [
 
         /**
          * The user key type.
-         * possible values: int, uuid
+         * possible values: int, uuid.
          */
         'user_key_type' => 'int',
 
         /**
          * The model to be used performer.
          * affected field are created_by, updated_by, deleted_by
-         * possible values: true, false
+         * possible values: true, false.
          */
         'use_perform_by' => true,   // true, false; affected field are created_by, updated_by, deleted_by
     ],
@@ -26,7 +26,7 @@ return [
     'breeze' => [
         /**
          * The view to be used for serve on breeze.
-         * possible values: blade, inertia
+         * possible values: blade, inertia.
          */
         'type' => 'blade',
     ],

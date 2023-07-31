@@ -106,6 +106,7 @@ class Controller extends BaseController
         if ($this->prefixView) {
             $view = preg_replace('/(\.)+$/i', '', $this->prefixView).'.'.$view;
         }
+
         return view($view, $this->controllerData);
     }
 
