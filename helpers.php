@@ -1,9 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
-use Illuminate\Support\ViewErrorBag;
-
 if (! function_exists('f')) {
     /**
      * @param  string  $text
@@ -18,7 +14,7 @@ if (! function_exists('f')) {
 
 if (! function_exists('prettySize')) {
     /**
-     * Human readable file size.
+     * Human-readable file size.
      *
      * @param  int  $bytes
      * @param  int  $decimals
@@ -69,7 +65,7 @@ if (! function_exists('setDefaultRequest')) {
 
 if (! function_exists('fromResource')) {
     /**
-     * Generate an collection from resource.
+     * Generate a collection from resource.
      *
      * @param  \Illuminate\Http\Resources\Json\JsonResource  $resource
      *
@@ -176,7 +172,7 @@ if (! function_exists('plugins')) {
             $js = implode('', $rs['js']);
         }
 
-        View::share(['pluginCss' => $css ?? '', 'pluginJs' => $js ?? '']);
+        \Illuminate\Support\Facades\View::share(['pluginCss' => $css ?? '', 'pluginJs' => $js ?? '']);
     }
 }
 
@@ -343,7 +339,7 @@ if (! function_exists('isDev')) {
             return \Illuminate\Support\Facades\Session::get('dev_mode', false);
         }
 
-        $dev = env('APP_DEVMODE', 'off');
+        $dev = (string) env('APP_DEV_MODE', 'off');
 
         return in_array(strtolower($dev), ['true', '1', 'on']);
     }
@@ -460,13 +456,13 @@ if (! function_exists('activeCss')) {
 
 if (! function_exists('getRawSql')) {
     /**
-     * @param \Illuminate\Database\Query\Builder|\Koffin\Core\Database\Query\Builder $query
+     * @param  \Illuminate\Contracts\Database\Eloquent\Builder|\Illuminate\Contracts\Database\Query\Builder  $query
      *
      * @return string
      */
-    function getRawSql(\Illuminate\Database\Query\Builder|\Koffin\Core\Database\Query\Builder $query): string
+    function getRawSql(\Illuminate\Contracts\Database\Eloquent\Builder|\Illuminate\Contracts\Database\Query\Builder $query): string
     {
-        return Str::replaceArray('?', $query->getBindings(), $query->toSql());
+        return \Illuminate\Support\Str::replaceArray('?', $query->getBindings(), $query->toSql());
     }
 }
 
@@ -474,12 +470,12 @@ if (! function_exists('getErrors')) {
     /**
      * Feedback CSS Class.
      *
-     * @param string|null $key
-     * @param string|null $bag
+     * @param  string|null  $key
+     * @param  string|null  $bag
      *
-     * @return ?ViewErrorBag
+     * @return \Illuminate\Support\ViewErrorBag|null
      */
-    function getErrors(?string $key = null, ?string $bag = null): ?ViewErrorBag
+    function getErrors(?string $key = null, ?string $bag = null): ?\Illuminate\Support\ViewErrorBag
     {
         $errors = session('errors');
         if (empty($key) || empty($errors)) {
@@ -507,7 +503,7 @@ if (! function_exists('hasError')) {
      */
     function hasError(string|array|null $key = null, ?string $bag = null): bool
     {
-        if (($errors = getErrors($key, $bag)) instanceof ViewErrorBag === false) {
+        if (($errors = getErrors($key, $bag)) instanceof \Illuminate\Support\ViewErrorBag === false) {
             return false;
         }
 
