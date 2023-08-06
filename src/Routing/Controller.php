@@ -142,7 +142,7 @@ class Controller extends BaseController
      */
     protected function setDefault(string|array $name, mixed $value = null): void
     {
-        if (! $this->request->input()) {
+        if (! $this->request->old()) {
             setDefaultRequest($name, $value);
         }
     }
