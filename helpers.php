@@ -365,15 +365,15 @@ if (! function_exists('routed')) {
      * with '#' fallback.
      *
      * @param string $name
-     * @param array  $parameters
+     * @param string|array  $params
      * @param bool   $absolute
      *
      * @return string
      */
-    function routed(string $name, array $parameters = [], bool $absolute = true): string
+    function routed(string $name, string|array $params = [], bool $absolute = true): string
     {
         if (app('router')->has($name)) {
-            return app('url')->route($name, $parameters, $absolute);
+            return app('url')->route($name, $params, $absolute);
         }
 
         return '#';
@@ -383,11 +383,11 @@ if (! function_exists('routed')) {
 if (! function_exists('activeRoute')) {
     /**
      * @param string $route
-     * @param array  $params
+     * @param string|array  $params
      *
      * @return bool
      */
-    function activeRoute(string $route = '', array $params = []): bool
+    function activeRoute(string $route = '', string|array $params = []): bool
     {
         if (empty($route = trim($route))) {
             return false;
