@@ -31,6 +31,13 @@ class Model extends BaseModel
     protected ?string $performBy = null;
 
     /**
+     * Use tryFrom method on eloquent cast from enum
+     *
+     * @var bool
+     */
+    protected bool $useTryOnEnumCast = true;
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -89,6 +96,17 @@ class Model extends BaseModel
         }
 
         return parent::performInsert($query);
+    }
+
+    /** @inheritDoc */
+    protected function getEnumCaseFromValue($enumClass, $value)
+    {
+        if (!$this->useTryOnEnumCast) {
+            return parent::getEnumCaseFromValue($enumClass, $value);
+        }
+        return is_subclass_of($enumClass, BackedEnum::class)
+            ? $enumClass::tryFrom($value)
+            : constant($enumClass.'::'.$value);
     }
 
     /*/**
