@@ -105,7 +105,7 @@ class Model extends BaseModel
             return parent::getEnumCaseFromValue($enumClass, $value);
         }
 
-        return is_subclass_of($enumClass, BackedEnum::class)
+        return is_subclass_of($enumClass, \BackedEnum::class)
             ? $enumClass::tryFrom($value)
             : constant($enumClass.'::'.$value);
     }
