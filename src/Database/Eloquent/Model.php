@@ -31,7 +31,7 @@ class Model extends BaseModel
     protected ?string $performBy = null;
 
     /**
-     * Use tryFrom method on eloquent cast from enum
+     * Use tryFrom method on eloquent cast from enum.
      *
      * @var bool
      */
@@ -101,9 +101,10 @@ class Model extends BaseModel
     /** @inheritDoc */
     protected function getEnumCaseFromValue($enumClass, $value)
     {
-        if (!$this->useTryOnEnumCast) {
+        if (! $this->useTryOnEnumCast) {
             return parent::getEnumCaseFromValue($enumClass, $value);
         }
+
         return is_subclass_of($enumClass, BackedEnum::class)
             ? $enumClass::tryFrom($value)
             : constant($enumClass.'::'.$value);
