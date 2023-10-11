@@ -48,23 +48,27 @@ class Blueprint extends BaseBlueprint
      */
     public function timestamps($precision = 0): void
     {
-        $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
-
         $this->timestamp('created_at', $precision)->nullable();
-        if ($this->performerMode == 'users') {
-            $this->{$foreignType}('created_by')->nullable()
-                ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
-        } else {
-            $this->string('created_by', 100)->nullable();
-        }
+        $this->makePerformerColumn('created_by');
 
         $this->timestamp('updated_at', $precision)->nullable();
-        if ($this->performerMode == 'users') {
-            $this->{$foreignType}('updated_by')->nullable()
-                ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
-        } else {
-            $this->string('updated_by', 100)->nullable();
-        }
+        $this->makePerformerColumn('updated_by');
+    }
+
+    /**
+     * Add creation and update timestampTz columns to the table.
+     *
+     * @param  int|null  $precision
+     *
+     * @return void
+     */
+    public function timestampsTz($precision = 0): void
+    {
+        $this->timestampTz('created_at', $precision)->nullable();
+        $this->makePerformerColumn('created_by');
+
+        $this->timestampTz('updated_at', $precision)->nullable();
+        $this->makePerformerColumn('updated_by');
     }
 
     /**
@@ -77,25 +81,47 @@ class Blueprint extends BaseBlueprint
      */
     public function softDeletes($column = 'deleted_at', $precision = 0): ColumnDefinition
     {
-        $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
-
+        $deletedByColumn = str($column)->replaceMatches('/_at$/i', '')->append('_by')->toString();
         $deletedColum = $this->timestamp($column, $precision)->nullable();
-        if ($this->performerMode == 'users') {
-            $this->{$foreignType}('deleted_by')->nullable()
-                ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
-        } else {
-            $this->string('deleted_by', 100)->nullable();
-        }
+        $this->makePerformerColumn($deletedByColumn);
 
         $this->timestamp('restore_at', $precision)->nullable();
-        if ($this->performerMode == 'users') {
-            $this->{$foreignType}('restore_by')->nullable()
-                ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
-        } else {
-            $this->string('restore_by', 100)->nullable();
-        }
+        $this->makePerformerColumn('restore_by');
 
         return $deletedColum;
+    }
+
+    /**
+     * Add a "deleted at" timestampTz for the table.
+     *
+     * @param  string  $column
+     * @param  int|null  $precision
+     *
+     * @return \Illuminate\Database\Schema\ColumnDefinition
+     */
+    public function softDeletesTz($column = 'deleted_at', $precision = 0): ColumnDefinition
+    {
+        $deletedByColumn = str($column)->replaceMatches('/_at$/i', '')->append('_by')->toString();
+        $deletedColum = $this->timestampTz($column, $precision)->nullable();
+        $this->makePerformerColumn($deletedByColumn);
+
+        $this->timestampTz('restore_at', $precision)->nullable();
+        $this->makePerformerColumn('restore_by');
+
+        return $deletedColum;
+    }
+
+    private function makePerformerColumn(string $column): void
+    {
+        if (config('koffinate.core.model.use_perform_by')) {
+            if ($this->performerMode == 'users') {
+                $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
+                $this->{$foreignType}($column)->nullable()
+                    ->constrained($this->tableUser)->onUpdate('cascade')->onDelete('restrict');
+            } else {
+                $this->string($column, 100)->nullable();
+            }
+        }
     }
 
     /**
