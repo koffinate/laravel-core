@@ -59,6 +59,7 @@ class Blueprint extends BaseBlueprint
      * Add creation and update timestampTz columns to the table.
      *
      * @param  int|null  $precision
+     *
      * @return void
      */
     public function timestampsTz($precision = 0): void
@@ -95,6 +96,7 @@ class Blueprint extends BaseBlueprint
      *
      * @param  string  $column
      * @param  int|null  $precision
+     *
      * @return \Illuminate\Database\Schema\ColumnDefinition
      */
     public function softDeletesTz($column = 'deleted_at', $precision = 0): ColumnDefinition
