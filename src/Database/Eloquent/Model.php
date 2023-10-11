@@ -38,16 +38,6 @@ class Model extends BaseModel
     protected bool $useTryOnEnumCast = true;
 
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'created_at', 'updated_at', 'deleted_at', 'restore_at',
-        'created_by', 'updated_by', 'deleted_by', 'restore_by',
-    ];
-
-    /**
      * Create a new Eloquent model instance.
      *
      * @param  array  $attributes
@@ -182,7 +172,10 @@ class Model extends BaseModel
      */
     protected function setPerformedBy(): void
     {
-        if (auth()->user() && empty($this->performBy) && config('koffinate.core.model.use_perform_by')) {
+        // reset performer
+        $this->performBy = null;
+
+        if (auth()->check() && config('koffinate.core.model.use_perform_by') && empty($this->performBy)) {
             $user = auth()->user();
             if ($user instanceof User) {
                 if ($this->performerMode == 'users') {

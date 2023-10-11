@@ -17,27 +17,34 @@ trait SoftDeletes
     {
         $query = $this->setKeysForSaveQuery($this->newModelQuery());
 
-        $this->setPerformedBy();
-
         $time = $this->freshTimestamp();
 
-        $columns = [
-            $this->getDeletedAtColumn() => $this->fromDateTime($time),
-            $this->getDeletedByColumn() => $this->performBy,
-        ];
+        $columns = [$this->getDeletedAtColumn() => $this->fromDateTime($time)];
 
         $this->{$this->getDeletedAtColumn()} = $time;
-        $this->{$this->getDeletedByColumn()} = $this->performBy;
+
+        if (config('koffinate.core.model.use_perform_by')) {
+            $this->setPerformedBy();
+            $columns[$this->getDeletedByColumn()] = $this->performBy;
+            $this->{$this->getDeletedByColumn()} = $this->performBy;
+        }
 
         if ($this->timestamps && ! is_null($this->getUpdatedAtColumn())) {
             $this->{$this->getUpdatedAtColumn()} = $time;
-            $this->{$this->getUpdatedByColumn()} = $this->performBy;
 
             $columns[$this->getUpdatedAtColumn()] = $this->fromDateTime($time);
-            $columns[$this->getUpdatedByColumn()] = $this->performBy;
+
+            if (config('koffinate.core.model.use_perform_by')) {
+                $this->{$this->getUpdatedByColumn()} = $this->performBy;
+                $columns[$this->getUpdatedByColumn()] = $this->performBy;
+            }
         }
 
         $query->update($columns);
+
+        $this->syncOriginalAttributes(array_keys($columns));
+
+        $this->fireModelEvent('trashed', false);
     }
 
     /**
@@ -54,12 +61,14 @@ trait SoftDeletes
             return false;
         }
 
-        $this->setPerformedBy();
-
         $this->{$this->getDeletedAtColumn()} = null;
-        $this->{$this->getDeletedByColumn()} = null;
         $this->{$this->getRestoreAtColumn()} = $this->freshTimestamp();
-        $this->{$this->getRestoreByColumn()} = $this->performBy;
+
+        if (config('koffinate.core.model.use_perform_by')) {
+            $this->setPerformedBy();
+            $this->{$this->getDeletedByColumn()} = null;
+            $this->{$this->getRestoreByColumn()} = $this->performBy;
+        }
 
         // Once we have saved the model, we will fire the "restored" event so this
         // developer will do anything they need to after a restore operation is
