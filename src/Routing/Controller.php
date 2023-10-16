@@ -148,6 +148,27 @@ class Controller extends BaseController
     }
 
     /**
+     * Get controller data.
+     *
+     * @param string|null $name
+     * @param mixed $default
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    protected function data(string|null $name = null, mixed $default = null, bool $asFluent = false): mixed
+    {
+        $data = fluent($this->controllerData);
+
+        if ($name) {
+            return $data->get($name, $default);
+        }
+
+        return $asFluent ? $data : $data->toArray();
+    }
+
+    /**
      * Set controller data.
      *
      * @param string $name
