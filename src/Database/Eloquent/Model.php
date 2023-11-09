@@ -16,7 +16,7 @@ class Model extends BaseModel
     use HasTimestamps, GeneralScope;
 
     /**
-     * Set table alias on query builder
+     * Set table alias on query builder.
      *
      * @var string|null
      */
@@ -83,6 +83,7 @@ class Model extends BaseModel
         if (static::$tableAlias) {
             return $query->from($this->getTable(), static::$tableAlias);
         }
+
         return $query;
     }
 
@@ -90,8 +91,9 @@ class Model extends BaseModel
     public function qualifyColumn($column)
     {
         if (static::$tableAlias) {
-            $column = static::$tableAlias . '.' . $column;
+            $column = static::$tableAlias.'.'.$column;
         }
+
         return parent::qualifyColumn($column);
     }
 
