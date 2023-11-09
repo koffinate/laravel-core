@@ -16,6 +16,13 @@ class Model extends BaseModel
     use HasTimestamps, GeneralScope;
 
     /**
+     * Set table alias on query builder
+     *
+     * @var string|null
+     */
+    public static string|null $tableAlias = null;
+
+    /**
      * The list of table wich include with schema.
      */
     protected string|array $fullnameTable = [];
@@ -37,13 +44,7 @@ class Model extends BaseModel
      */
     protected bool $useTryOnEnumCast = true;
 
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @param  array  $attributes
-     *
-     * @return void
-     */
+    /** @inheritdoc */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -52,11 +53,7 @@ class Model extends BaseModel
         $this->fullnameTable['self'] = "{$schema}.{$this->table}";
     }
 
-    /**
-     * Get the value indicating whether the IDs are incrementing.
-     *
-     * @return bool
-     */
+    /** @inheritdoc */
     public function getIncrementing()
     {
         if (in_array(strtolower($this->getKeyType()), ['string', 'uuid'])) {
@@ -67,12 +64,38 @@ class Model extends BaseModel
     }
 
     /**
-     * Perform a model insert operation.
+     * @param array $data
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return bool
+     * @return array
      */
+    public static function getFillableAttribute(array $data): array
+    {
+        $fillable = (new static)->getFillable();
+
+        return Arr::only($data, Arr::flatten($fillable));
+    }
+
+    /** @inheritdoc */
+    public function newQuery()
+    {
+        $query = parent::newQuery();
+
+        if (static::$tableAlias) {
+            return $query->from($this->getTable(), static::$tableAlias);
+        }
+        return $query;
+    }
+
+    /** @inheritdoc */
+    public function qualifyColumn($column)
+    {
+        if (static::$tableAlias) {
+            $column = static::$tableAlias . '.' . $column;
+        }
+        return parent::qualifyColumn($column);
+    }
+
+    /** @inheritdoc */
     protected function performInsert(Builder $query)
     {
         if (in_array($keyType = strtolower($this->getKeyType()), ['string', 'uuid', 'ulid'])) {
