@@ -4,8 +4,8 @@ namespace Koffin\Core\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
 use Koffin\Core\Database\Eloquent\Concerns\HasTimestamps;
