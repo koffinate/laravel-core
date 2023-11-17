@@ -468,21 +468,20 @@ if (! function_exists('getRawSql')) {
 
 if (! function_exists('getErrors')) {
     /**
-     * Feedback CSS Class.
+     * Get validation errors.
      *
-     * @param  string|null  $key
      * @param  string|null  $bag
      *
      * @return \Illuminate\Support\ViewErrorBag|null
      */
-    function getErrors(?string $key = null, ?string $bag = null): ?\Illuminate\Support\ViewErrorBag
+    function getErrors(?string $bag = null): ?\Illuminate\Support\ViewErrorBag
     {
         $errors = session('errors');
-        if (empty($key) || ! $errors instanceof \Illuminate\Support\ViewErrorBag) {
+        if (! $errors instanceof \Illuminate\Support\ViewErrorBag) {
             return null;
         }
         if ($bag) {
-            if (empty($errors->$bag->all())) {
+            if (empty($errors->{$bag}->all())) {
                 return null;
             }
             $errors = $errors->$bag;
@@ -494,7 +493,7 @@ if (! function_exists('getErrors')) {
 
 if (! function_exists('hasError')) {
     /**
-     * Feedback CSS Class.
+     * Exist validation error.
      *
      * @param string|array|null $key
      * @param string|null $bag
@@ -503,7 +502,7 @@ if (! function_exists('hasError')) {
      */
     function hasError(string|array|null $key = null, ?string $bag = null): bool
     {
-        if (($errors = getErrors($key, $bag)) instanceof \Illuminate\Support\ViewErrorBag === false) {
+        if (($errors = getErrors($bag)) instanceof \Illuminate\Support\ViewErrorBag === false) {
             return false;
         }
 
