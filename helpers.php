@@ -478,7 +478,7 @@ if (! function_exists('getErrors')) {
     function getErrors(?string $key = null, ?string $bag = null): ?\Illuminate\Support\ViewErrorBag
     {
         $errors = session('errors');
-        if (empty($key) || empty($errors)) {
+        if (empty($key) || ! $errors instanceof \Illuminate\Support\ViewErrorBag) {
             return null;
         }
         if ($bag) {
