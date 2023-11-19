@@ -327,6 +327,68 @@ if (! function_exists('carbon')) {
     }
 }
 
+if (! function_exists('carbonFormat')) {
+    /**
+     * @param  string|\DateTimeInterface|null  $datetime
+     * @param  string  $isoFormat
+     * @param  string|null  $format
+     * @param  string|\DateTimeZone|null  $timezone
+     * @param  bool  $showTz
+     *
+     * @return string
+     */
+    function carbonFormat(
+        string|DateTimeInterface|null $datetime,
+        string $isoFormat = 'll LT',
+        string|null $format = null,
+        string|\DateTimeZone|null $timezone = null,
+        bool $showTz = true
+    ): string {
+        $timezone ??= '+07:00';
+        $timezoneSuffix = match (\Illuminate\Support\Str::slug($timezone)) {
+            '7',    // +7
+            '70',   // +7:0
+            '700',  // +7:00
+            '0700',
+            'asiajakarta' => 'WIB',
+            '8',    // +8
+            '80',   // +8:0
+            '800',  // +8:00
+            '0800',
+            'asiamakassar' => 'WITA',
+            '9',    // +9
+            '90',   // +9:0
+            '900',  // +9:00
+            '0900',
+            'asiajayapura' => 'WIT',
+            default => ($showTz ? $timezone : ''),
+        };
+
+        if (is_null($datetime)) {
+            return '';
+        }
+
+        if (is_string($datetime)) {
+            try {
+                $datetime = \Illuminate\Support\Carbon::parse($datetime);
+            } catch (Exception $e) {
+                return '';
+            }
+        }
+
+        $datetime->timezone($timezone);
+        $timezoneLabel = $timezoneSuffix
+            ? " {$timezoneSuffix}"
+            : '';
+
+        if ($format) {
+            return "{$datetime->format($format)}{$timezoneLabel}";
+        }
+
+        return "{$datetime->isoFormat($isoFormat)}{$timezoneLabel}";
+    }
+}
+
 if (! function_exists('isDev')) {
     /**
      * Development Mode Checker.
