@@ -327,7 +327,7 @@ if (! function_exists('carbon')) {
     }
 }
 
-if (!function_exists('carbonFormat')) {
+if (! function_exists('carbonFormat')) {
     /**
      * @param  string|\DateTimeInterface|null  $datetime
      * @param  string  $isoFormat
@@ -384,6 +384,7 @@ if (!function_exists('carbonFormat')) {
         if ($format) {
             return "{$datetime->format($format)}{$timezoneLabel}";
         }
+
         return "{$datetime->isoFormat($isoFormat)}{$timezoneLabel}";
     }
 }
