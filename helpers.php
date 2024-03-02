@@ -361,7 +361,7 @@ if (! function_exists('carbonFormat')) {
             '900',  // +9:00
             '0900',
             'asiajayapura' => 'WIT',
-            default => ($showTz ? $timezone : ''),
+            default => $timezone,
         };
 
         if (is_null($datetime)) {
@@ -377,7 +377,7 @@ if (! function_exists('carbonFormat')) {
         }
 
         $datetime->timezone($timezone);
-        $timezoneLabel = $timezoneSuffix
+        $timezoneLabel = $showTz && $timezoneSuffix
             ? " {$timezoneSuffix}"
             : '';
 
