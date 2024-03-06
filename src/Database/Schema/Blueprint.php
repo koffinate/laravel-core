@@ -18,8 +18,8 @@ class Blueprint extends BaseBlueprint
     /**
      * @var string
      */
-    private string $tableUser = '';
-    private string $userKeyType = 'int';
+    private string $tableUser;
+    private string $userKeyType;
 
     /**
      * Create a new schema blueprint.
