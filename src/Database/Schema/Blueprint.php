@@ -18,7 +18,7 @@ class Blueprint extends BaseBlueprint
     /**
      * @var string
      */
-    private string $tableUser = '';
+    private string $tableUser;
     private string $userKeyType;
 
     /**
@@ -33,10 +33,6 @@ class Blueprint extends BaseBlueprint
     public function __construct($table, Closure $callback = null, $prefix = '')
     {
         parent::__construct($table, $callback, $prefix);
-
-        $userModel = config('koffinate.core.model.users');
-        $this->tableUser = (new $userModel)->getTable();
-        $this->userKeyType = config('koffinate.core.model.user_key_type', 'int');
     }
 
     /**
@@ -113,6 +109,15 @@ class Blueprint extends BaseBlueprint
 
     private function makePerformerColumn(string $column): void
     {
+        if (empty($this->userKeyType)) {
+            $this->userKeyType = config('koffinate.core.model.user_key_type', 'int');
+        }
+
+        if (empty($this->tableUser)) {
+            $userModel = config('koffinate.core.model.users');
+            $this->tableUser = (new $userModel)->getTable();
+        }
+
         if (config('koffinate.core.model.use_perform_by')) {
             if ($this->performerMode == 'users') {
                 $foreignType = in_array($this->userKeyType, ['int', 'integer']) ? 'foreignId' : 'foreignUuid';
