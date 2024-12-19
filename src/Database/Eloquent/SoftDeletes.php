@@ -23,7 +23,7 @@ trait SoftDeletes
 
         $this->{$this->getDeletedAtColumn()} = $time;
 
-        if (config('koffinate.core.model.use_perform_by') && !request()->has($this->getDeletedByColumn())) {
+        if (config('koffinate.core.model.use_perform_by') && ! request()->has($this->getDeletedByColumn())) {
             $this->setPerformedBy();
             $columns[$this->getDeletedByColumn()] = $this->performBy;
             $this->{$this->getDeletedByColumn()} = $this->performBy;
@@ -64,7 +64,7 @@ trait SoftDeletes
         $this->{$this->getDeletedAtColumn()} = null;
         $this->{$this->getRestoreAtColumn()} = $this->freshTimestamp();
 
-        if (config('koffinate.core.model.use_perform_by') && !request()->has($this->getRestoreByColumn())) {
+        if (config('koffinate.core.model.use_perform_by') && ! request()->has($this->getRestoreByColumn())) {
             $this->setPerformedBy();
             $this->{$this->getDeletedByColumn()} = null;
             $this->{$this->getRestoreByColumn()} = $this->performBy;
