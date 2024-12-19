@@ -20,7 +20,7 @@ trait HasTimestamps
     public function setCreatedAt($value): static
     {
         $this->{$this->getCreatedAtColumn()} = $value;
-        if (config('koffinate.core.model.use_perform_by')) {
+        if (config('koffinate.core.model.use_perform_by') && !request()->has($this->getCreatedByColumn())) {
             $this->setPerformedBy();
             $this->{$this->getCreatedByColumn()} = $this->performBy;
         }
@@ -38,7 +38,7 @@ trait HasTimestamps
     public function setUpdatedAt($value): static
     {
         $this->{$this->getUpdatedAtColumn()} = $value;
-        if (config('koffinate.core.model.use_perform_by')) {
+        if (config('koffinate.core.model.use_perform_by') && !request()->has($this->getUpdatedByColumn())) {
             $this->setPerformedBy();
             $this->{$this->getUpdatedByColumn()} = $this->performBy;
         }
